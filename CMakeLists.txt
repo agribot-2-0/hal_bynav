@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(hal_bynav)
 
-add_compile_options(-std=c++17)
+add_compile_options(-std=c++17 -Wall -Wextra -pedantic -Werror)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -22,6 +22,10 @@ include_directories(
 add_executable(hal_bynav_node 
   src/hal_bynav_node.cpp
   src/HalBynavNode.cpp
+  src/BynavSocket.cpp
+  src/BynavFrameParser.cpp
+  src/BynavFrames.cpp
+  src/Bynav.cpp
 )
 target_link_libraries(hal_bynav_node ${catkin_LIBRARIES})
 add_dependencies(hal_bynav_node ${catkin_EXPORTED_TARGETS})

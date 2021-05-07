@@ -6,7 +6,12 @@
 
 HalBynavNode::HalBynavNode()
 {
+  // TODO(olek) - get ip address and port from ros parameters
+  std::string ip_address = "192.168.0.164";
+  std::uint16_t port = 1111;
+
   // Connect socket
+  bynav_socket_.connectSocket(ip_address, port);
 }
 
 HalBynavNode::~HalBynavNode()
@@ -15,13 +20,20 @@ HalBynavNode::~HalBynavNode()
 
 void HalBynavNode::run()
 {
-  ros::Rate loop_rate{ 10 };
-
-  while (ros::ok)
+  while (ros::ok())
   {
-    // TODO - read
+    try
+    {
+      auto frame_length = bynav_socket_.read();
+      BynavFrameParser::parsePacket(bynav_, bynav_socket_.getBuffer(), frame_length);
+      // publishNavSatFix();
+      // publishImu();
+    }
+    catch (const std::exception& e)
+    {
+      ROS_ERROR_STREAM("[HalBynav]" << e.what());
+    }
 
     ros::spinOnce();
-    loop_rate.sleep();
   }
 }
