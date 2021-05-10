@@ -24,7 +24,6 @@ add_executable(hal_bynav_node
   src/HalBynavNode.cpp
   src/BynavSocket.cpp
   src/BynavFrameParser.cpp
-  src/BynavFrames.cpp
   src/Bynav.cpp
 )
 target_link_libraries(hal_bynav_node ${catkin_LIBRARIES})

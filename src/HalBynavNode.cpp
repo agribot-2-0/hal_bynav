@@ -4,7 +4,7 @@
 
 #include "hal_bynav/HalBynavNode.h"
 
-HalBynavNode::HalBynavNode()
+HalBynavNode::HalBynavNode() : bynav_{}
 {
   // TODO(olek) - get ip address and port from ros parameters
   std::string ip_address = "192.168.0.164";
@@ -26,6 +26,7 @@ void HalBynavNode::run()
     {
       auto frame_length = bynav_socket_.read();
       BynavFrameParser::parsePacket(bynav_, bynav_socket_.getBuffer(), frame_length);
+      ROS_WARN_STREAM(bynav_);
       // publishNavSatFix();
       // publishImu();
     }

@@ -5,7 +5,6 @@
 #pragma once
 
 #include "hal_bynav/Bynav.h"
-#include "hal_bynav/BynavFrames.h"
 
 #include <vector>
 #include <utility>
@@ -27,10 +26,18 @@ enum class MessageId : std::uint16_t
   BestGnssPos = 1429,
 };
 
+struct Header
+{
+  MessageId message_id_;
+  std::size_t header_length_;
+  std::size_t message_length_;
+  std::size_t frame_length_;
+};
+
 void parsePacket(Bynav& bynav, std::uint8_t* packet_buffer, std::size_t packet_length);
 std::vector<std::pair<int, std::size_t>> findFrames(std::uint8_t* packet_buffer, std::size_t packet_length);
 void parseFrame(Bynav& bynav, uint8_t* frame_buffer, std::size_t frame_length);
-BynavFrames::Header parseHeader(std::uint8_t* frame_buffer);
+Header parseHeader(std::uint8_t* frame_buffer);
 void checkCrc(std::uint8_t* frame_buffer, std::size_t frame_length);
 std::uint32_t calculateCrcForFrame(std::uint8_t* frame_buffer, std::size_t frame_length);
 std::uint64_t calculateCrc(std::uint64_t value);
