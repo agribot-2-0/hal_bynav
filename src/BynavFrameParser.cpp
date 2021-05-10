@@ -152,10 +152,12 @@ void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t
   bynav.heading_solution_status_ = static_cast<SolutionStatus>(getUint32FromBuffer(&message_buffer[0]));
   bynav.heading_position_status_ = static_cast<PositionStatus>(getUint32FromBuffer(&message_buffer[4]));
   bynav.heading_baseline_length_ = getFloatFromBuffer(&message_buffer[8]);
+  bynav.yaw_ = getFloatFromBuffer(&message_buffer[12]);
+  bynav.pitch_ = getFloatFromBuffer(&message_buffer[16]);
+  bynav.yaw_std_ = getFloatFromBuffer(&message_buffer[24]);
+  bynav.pitch_std_ = getFloatFromBuffer(&message_buffer[28]);
+  bynav.heading_solution_source_ = static_cast<SolutionSource>(message_buffer[40]);
 
-  (void)bynav;
-  (void)message_buffer;
-  (void)message_length;
   ROS_WARN_STREAM("Parsing heading message");
 }
 

@@ -28,6 +28,27 @@ void HalBynavNode::publishNavSatFix()
   msg.header.frame_id = frame_id_;
   msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
 
+  if (bynav_.best_gnss_pos_solution_status_ == SolutionStatus::SolComputed)
+  {
+    // TODO - select proper PositionStatus for RTK
+    if (bynav_.best_gnss_pos_position_status_ == PositionStatus::WideInt)
+    {
+      msg.status.status = msg.status.STATUS_GBAS_FIX;
+    }
+    else if (bynav_.best_gnss_pos_position_status_ == PositionStatus::Single)
+    {
+      msg.status.status = msg.status.STATUS_FIX;
+    }
+    else
+    {
+      msg.status.status = msg.status.STATUS_NO_FIX;
+    }
+  }
+  else
+  {
+    msg.status.status = msg.status.STATUS_NO_FIX;
+  }
+
   msg.latitude = bynav_.latitude_;
   msg.longitude = bynav_.longitude_;
   msg.altitude = bynav_.height_;
@@ -42,21 +63,23 @@ void HalBynavNode::publishNavSatFix()
 
 void HalBynavNode::publishImu()
 {
-  // TODO - publish only if proper solution status
+  // TODO - publish only if proper solution status and/or position status
+  if (bynav_.heading_solution_status_ == SolutionStatus::SolComputed)
+  {
+    auto msg = sensor_msgs::Imu{};
+    msg.header.frame_id = frame_id_;
+    msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
 
-  auto msg = sensor_msgs::Imu{};
-  msg.header.frame_id = frame_id_;
-  msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
+    tf2::Quaternion quat;
+    quat.setRPY(0.0, bynav_.pitch_, bynav_.yaw_);
+    msg.orientation = tf2::toMsg(quat);
 
-  tf2::Quaternion quat;
-  quat.setRPY(0.0, bynav_.pitch_, bynav_.yaw_);
-  msg.orientation = tf2::toMsg(quat);
+    msg.orientation_covariance[0] = 0.0;
+    msg.orientation_covariance[4] = bynav_.pitch_std_ * bynav_.pitch_std_;
+    msg.orientation_covariance[8] = bynav_.yaw_std_ * bynav_.yaw_std_;
 
-  msg.orientation_covariance[0] = 0.0;
-  msg.orientation_covariance[4] = bynav_.pitch_std_ * bynav_.pitch_std_;
-  msg.orientation_covariance[8] = bynav_.yaw_std_ * bynav_.yaw_std_;
-
-  imu_publisher_.publish(msg);
+    imu_publisher_.publish(msg);
+  }
 }
 
 void HalBynavNode::run()
