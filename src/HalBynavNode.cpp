@@ -22,15 +22,15 @@ HalBynavNode::~HalBynavNode()
 
 void HalBynavNode::publishNavSatFix()
 {
-  // TODO - fill in status fields
+  // TODO(olek) - fill in status fields
 
   auto msg = sensor_msgs::NavSatFix{};
   msg.header.frame_id = frame_id_;
-  msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
+  msg.header.stamp = ros::Time::now();  // TODO(olek) - maybe use timestamp from GNSS receiver?
 
   if (bynav_.best_gnss_pos_solution_status_ == SolutionStatus::SolComputed)
   {
-    // TODO - select proper PositionStatus for RTK
+    // TODO(olek) - select proper PositionStatus for RTK
     if (bynav_.best_gnss_pos_position_status_ == PositionStatus::WideInt)
     {
       msg.status.status = msg.status.STATUS_GBAS_FIX;
@@ -63,12 +63,12 @@ void HalBynavNode::publishNavSatFix()
 
 void HalBynavNode::publishImu()
 {
-  // TODO - publish only if proper solution status and/or position status
+  // TODO(olek) - publish only if proper solution status and/or position status
   if (bynav_.heading_solution_status_ == SolutionStatus::SolComputed)
   {
     auto msg = sensor_msgs::Imu{};
     msg.header.frame_id = frame_id_;
-    msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
+    msg.header.stamp = ros::Time::now();  // TODO(olek) - maybe use timestamp from GNSS receiver?
 
     tf2::Quaternion quat;
     quat.setRPY(0.0, bynav_.pitch_, bynav_.yaw_);

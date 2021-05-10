@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include <stdexcept>
-
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-
 #include <strings.h>
+
+#include <stdexcept>
+#include <string>
 
 class BynavSocket
 {
@@ -20,7 +20,7 @@ private:
 
   int socket_fd_;
 
-  uint8_t buffer_[buffer_size_];
+  uint8_t buffer_[buffer_size_];  // NOLINT(runtime/arrays)
   int buffer_length_;
 
 public:

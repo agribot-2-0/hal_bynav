@@ -8,7 +8,7 @@ namespace BynavFrameParser
 {
 // Maybe change name to something like "updateFromFrame?"
 // Or create config structs for various frames we want to receive?
-void parsePacket(Bynav& bynav, std::uint8_t* packet_buffer, std::size_t packet_length)
+void parsePacket(Bynav& bynav, std::uint8_t* packet_buffer, std::size_t packet_length)  // NOLINT(runtime/references)
 {
   auto frames = findFrames(packet_buffer, packet_length);
 
@@ -57,7 +57,7 @@ std::vector<std::pair<int, std::size_t>> findFrames(std::uint8_t* packet_buffer,
   return frames;
 }
 
-void parseFrame(Bynav& bynav, uint8_t* frame_buffer, std::size_t frame_length)
+void parseFrame(Bynav& bynav, uint8_t* frame_buffer, std::size_t frame_length)  // NOLINT(runtime/references)
 {
   checkCrc(frame_buffer, frame_length);
 
@@ -141,7 +141,8 @@ std::uint64_t calculateCrc(std::uint64_t value)
   return crc;
 }
 
-void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t message_length)
+void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(runtime/references)
+                         std::size_t message_length)
 {
   if (message_length != heading_message_length_)
   {
@@ -161,7 +162,8 @@ void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t
   ROS_WARN_STREAM("Parsing heading message");
 }
 
-void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t message_length)
+void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(runtime/references)
+                             std::size_t message_length)
 {
   if (message_length != best_gnss_pos_message_length_)
   {

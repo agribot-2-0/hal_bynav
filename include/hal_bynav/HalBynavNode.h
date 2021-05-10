@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <string>
-
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <sensor_msgs/Imu.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+#include <string>
 
 #include "agribot_common/CommonFunctions/ros_common_functions.h"
 #include "hal_bynav/Bynav.h"
