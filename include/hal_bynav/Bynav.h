@@ -69,9 +69,8 @@ enum class SolutionSource
   SecondaryAntenna = 4,
 };
 
-class Bynav
+struct Bynav
 {
-private:
   // BestGnssPos
   SolutionStatus best_gnss_pos_solution_status_;
   PositionStatus best_gnss_pos_position_status_;
@@ -84,11 +83,14 @@ private:
   double longitude_std_;
   double height_std_;
 
+  std::uint8_t tracked_satellites_n_;
+  std::uint8_t solution_satellites_n_;
+
   // Heading
   SolutionStatus heading_solution_status_;
   PositionStatus heading_position_status_;
   SolutionSource heading_solution_source_;
-  double heading_baseline_length_;
+  float heading_baseline_length_;
 
   double pitch_;
   double yaw_;
@@ -96,7 +98,6 @@ private:
   double pitch_std_;
   double yaw_std_;
 
-public:
   Bynav() = default;
   ~Bynav() = default;
   friend std::ostream& operator<<(std::ostream& os, const Bynav& b);

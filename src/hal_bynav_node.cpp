@@ -7,11 +7,11 @@
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "hal_bynav_node");
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
 
   try
   {
-    HalBynavNode hbn = HalBynavNode{};
+    HalBynavNode hbn = HalBynavNode{ &nh };
     hbn.run();  // run shouldn't throw here anyway (exception is handled internally)
   }
   catch (const std::exception& e)

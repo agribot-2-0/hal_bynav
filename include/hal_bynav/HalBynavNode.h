@@ -4,8 +4,14 @@
 
 #pragma once
 
-#include <ros/ros.h>
+#include <string>
 
+#include <ros/ros.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/Imu.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+#include "agribot_common/CommonFunctions/ros_common_functions.h"
 #include "hal_bynav/Bynav.h"
 #include "hal_bynav/BynavSocket.h"
 #include "hal_bynav/BynavFrameParser.h"
@@ -16,8 +22,15 @@ private:
   BynavSocket bynav_socket_;
   Bynav bynav_;
 
+  ros::NodeHandle* nh_;
+  ros::Publisher nav_sat_fix_publisher_;
+  ros::Publisher imu_publisher_;
+  std::string frame_id_;
+
 public:
-  HalBynavNode();
+  explicit HalBynavNode(ros::NodeHandle* nh);
   ~HalBynavNode();
   void run();
+  void publishNavSatFix();
+  void publishImu();
 };

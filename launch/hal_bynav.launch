@@ -1,4 +1,17 @@
 <?xml version="1.0"?>
+
 <launch>
-  <node pkg="hal_bynav" type="hal_bynav_node" name="hal_bynav_node" />
+
+  <arg name="frame_id"      default="bynav_link" />
+  <arg name="ip_address"    default="192.168.0.164" />
+  <arg name="port"          default="1111" />
+
+  <node pkg="hal_bynav" type="hal_bynav_node" name="hal_bynav_node">
+    <param name="frame_id" value="$(arg frame_id)" />
+    <param name="ip_address" value="$(arg ip_address)" />
+    <param name="port" value="$(arg port)" />
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="map_bynav_static_transfrom_publisher" args="0 0 0 0 0 0 map bynav_link 100" />
+
 </launch>

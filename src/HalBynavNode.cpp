@@ -4,18 +4,59 @@
 
 #include "hal_bynav/HalBynavNode.h"
 
-HalBynavNode::HalBynavNode() : bynav_{}
+HalBynavNode::HalBynavNode(ros::NodeHandle* nh) : bynav_{}, nh_{ nh }
 {
-  // TODO(olek) - get ip address and port from ros parameters
-  std::string ip_address = "192.168.0.164";
-  std::uint16_t port = 1111;
+  frame_id_ = ros_common_functions::getRosParam<std::string>("~frame_id");
+  auto ip_address = ros_common_functions::getRosParam<std::string>("~ip_address");
+  std::uint16_t port = ros_common_functions::getRosParam<int>("~port");
 
-  // Connect socket
   bynav_socket_.connectSocket(ip_address, port);
+
+  nav_sat_fix_publisher_ = nh_->advertise<sensor_msgs::NavSatFix>("gnss", 1);
+  imu_publisher_ = nh_->advertise<sensor_msgs::Imu>("imu", 1);
 }
 
 HalBynavNode::~HalBynavNode()
 {
+}
+
+void HalBynavNode::publishNavSatFix()
+{
+  // TODO - fill in status fields
+
+  auto msg = sensor_msgs::NavSatFix{};
+  msg.header.frame_id = frame_id_;
+  msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
+
+  msg.latitude = bynav_.latitude_;
+  msg.longitude = bynav_.longitude_;
+  msg.altitude = bynav_.height_;
+
+  msg.position_covariance[0] = bynav_.latitude_std_ * bynav_.latitude_std_;
+  msg.position_covariance[4] = bynav_.longitude_std_ * bynav_.longitude_std_;
+  msg.position_covariance[8] = bynav_.height_std_ * bynav_.height_std_;
+  msg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_DIAGONAL_KNOWN;
+
+  nav_sat_fix_publisher_.publish(msg);
+}
+
+void HalBynavNode::publishImu()
+{
+  // TODO - publish only if proper solution status
+
+  auto msg = sensor_msgs::Imu{};
+  msg.header.frame_id = frame_id_;
+  msg.header.stamp = ros::Time::now();  // TODO - maybe use timestamp from GNSS receiver?
+
+  tf2::Quaternion quat;
+  quat.setRPY(0.0, bynav_.pitch_, bynav_.yaw_);
+  msg.orientation = tf2::toMsg(quat);
+
+  msg.orientation_covariance[0] = 0.0;
+  msg.orientation_covariance[4] = bynav_.pitch_std_ * bynav_.pitch_std_;
+  msg.orientation_covariance[8] = bynav_.yaw_std_ * bynav_.yaw_std_;
+
+  imu_publisher_.publish(msg);
 }
 
 void HalBynavNode::run()
@@ -27,8 +68,8 @@ void HalBynavNode::run()
       auto frame_length = bynav_socket_.read();
       BynavFrameParser::parsePacket(bynav_, bynav_socket_.getBuffer(), frame_length);
       ROS_WARN_STREAM(bynav_);
-      // publishNavSatFix();
-      // publishImu();
+      publishNavSatFix();
+      publishImu();
     }
     catch (const std::exception& e)
     {

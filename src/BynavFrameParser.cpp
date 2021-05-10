@@ -90,23 +90,17 @@ Header parseHeader(std::uint8_t* frame_buffer)
   // If sync bytes are wrong throw exception
   Header header;
 
-  auto combine_bytes = [](std::uint8_t lsb, std::uint8_t msb) {
-    return (static_cast<std::uint16_t>(lsb)) | (static_cast<std::uint16_t>(msb) << 8);
-  };
-
   header.header_length_ = frame_buffer[3];
-  header.message_id_ = static_cast<MessageId>(combine_bytes(frame_buffer[4], frame_buffer[5]));
-  header.message_length_ = combine_bytes(frame_buffer[8], frame_buffer[9]);
+  header.message_id_ = static_cast<MessageId>(combineTwoBytes(frame_buffer[4], frame_buffer[5]));
+  header.message_length_ = combineTwoBytes(frame_buffer[8], frame_buffer[9]);
   header.frame_length_ = header.header_length_ + header.message_length_ + crc_length;
   return header;
 }
 
 void checkCrc(std::uint8_t* frame_buffer, std::size_t frame_length)
 {
-  std::uint32_t crc_in_frame = static_cast<std::uint32_t>(frame_buffer[frame_length - 4]) |
-                               static_cast<std::uint32_t>(frame_buffer[frame_length - 3]) << 8 |
-                               static_cast<std::uint32_t>(frame_buffer[frame_length - 2]) << 16 |
-                               static_cast<std::uint32_t>(frame_buffer[frame_length - 1]) << 24;
+  auto crc_in_frame = combineFourBytes(frame_buffer[frame_length - 4], frame_buffer[frame_length - 3],
+                                       frame_buffer[frame_length - 2], frame_buffer[frame_length - 1]);
 
   auto calculated_crc = calculateCrcForFrame(frame_buffer, frame_length - crc_length);
 
@@ -149,6 +143,16 @@ std::uint64_t calculateCrc(std::uint64_t value)
 
 void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t message_length)
 {
+  if (message_length != heading_message_length_)
+  {
+    throw std::runtime_error("Heading message length missmatch. Should be " + std::to_string(heading_message_length_) +
+                             ", but is " + std::to_string(message_length));
+  }
+
+  bynav.heading_solution_status_ = static_cast<SolutionStatus>(getUint32FromBuffer(&message_buffer[0]));
+  bynav.heading_position_status_ = static_cast<PositionStatus>(getUint32FromBuffer(&message_buffer[4]));
+  bynav.heading_baseline_length_ = getFloatFromBuffer(&message_buffer[8]);
+
   (void)bynav;
   (void)message_buffer;
   (void)message_length;
@@ -157,10 +161,72 @@ void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t
 
 void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer, std::size_t message_length)
 {
-  (void)bynav;
-  (void)message_buffer;
-  (void)message_length;
+  if (message_length != best_gnss_pos_message_length_)
+  {
+    throw std::runtime_error("BestGnssPos message length missmatch. Should be " +
+                             std::to_string(best_gnss_pos_message_length_) + ", but is " +
+                             std::to_string(message_length));
+  }
+
+  bynav.best_gnss_pos_solution_status_ = static_cast<SolutionStatus>(getUint32FromBuffer(&message_buffer[0]));
+  bynav.best_gnss_pos_position_status_ = static_cast<PositionStatus>(getUint32FromBuffer(&message_buffer[4]));
+  bynav.latitude_ = getDoubleFromBuffer(&message_buffer[8]);
+  bynav.longitude_ = getDoubleFromBuffer(&message_buffer[16]);
+  bynav.height_ = getDoubleFromBuffer(&message_buffer[24]);
+  bynav.latitude_std_ = getFloatFromBuffer(&message_buffer[40]);
+  bynav.longitude_std_ = getFloatFromBuffer(&message_buffer[44]);
+  bynav.height_std_ = getFloatFromBuffer(&message_buffer[48]);
+  bynav.tracked_satellites_n_ = message_buffer[64];
+  bynav.solution_satellites_n_ = message_buffer[65];
+
   ROS_WARN_STREAM("Parsing bestGnssPos message");
+}
+
+inline std::uint16_t getUint16FromBuffer(std::uint8_t* buffer)
+{
+  return combineTwoBytes(buffer[0], buffer[1]);
+}
+
+inline std::uint32_t getUint32FromBuffer(std::uint8_t* buffer)
+{
+  return combineFourBytes(buffer[0], buffer[1], buffer[2], buffer[3]);
+}
+
+inline std::uint64_t getUint64FromBuffer(std::uint8_t* buffer)
+{
+  return combineEightBytes(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], buffer[6], buffer[7]);
+}
+
+float getFloatFromBuffer(std::uint8_t* buffer)
+{
+  auto tmp_uint32 = getUint32FromBuffer(buffer);
+  return *reinterpret_cast<float*>(&tmp_uint32);
+}
+
+float getDoubleFromBuffer(std::uint8_t* buffer)
+{
+  auto tmp_uint64 = getUint64FromBuffer(buffer);
+  return *reinterpret_cast<double*>(&tmp_uint64);
+}
+
+inline std::uint16_t combineTwoBytes(std::uint8_t lsb, std::uint8_t msb)
+{
+  return (static_cast<std::uint16_t>(lsb) | static_cast<std::uint16_t>(msb) << 8);
+}
+
+inline std::uint32_t combineFourBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3)
+{
+  return (static_cast<std::uint32_t>(b0) | static_cast<std::uint32_t>(b1) << 8 | static_cast<std::uint32_t>(b2) << 16 |
+          static_cast<std::uint32_t>(b3) << 24);
+}
+
+inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3,
+                                       std::uint8_t b4, std::uint8_t b5, std::uint8_t b6, std::uint8_t b7)
+{
+  return (static_cast<std::uint64_t>(b0) | static_cast<std::uint64_t>(b1) << 8 | static_cast<std::uint64_t>(b2) << 16 |
+          static_cast<std::uint64_t>(b3) << 24 | static_cast<std::uint64_t>(b4) << 32 |
+          static_cast<std::uint64_t>(b5) << 40 | static_cast<std::uint64_t>(b6) << 48 |
+          static_cast<std::uint64_t>(b7) << 56);
 }
 
 }  // namespace BynavFrameParser
