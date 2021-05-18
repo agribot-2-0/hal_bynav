@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "agribot_common/CommonFunctions/common_functions.h"
 #include "hal_bynav/Bynav.h"
 
 namespace BynavFrameParser
@@ -58,5 +59,7 @@ inline std::uint16_t combineTwoBytes(std::uint8_t lsb, std::uint8_t msb);
 inline std::uint32_t combineFourBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3);
 inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3,
                                        std::uint8_t b4, std::uint8_t b5, std::uint8_t b6, std::uint8_t b7);
+inline float bynavPitchToRep103(float bynav_pitch);
+inline float bynavYawToRep103(float bynav_yaw);
 
 }  // namespace BynavFrameParser

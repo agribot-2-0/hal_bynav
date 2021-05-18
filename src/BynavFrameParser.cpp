@@ -153,10 +153,10 @@ void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(
   bynav.heading_solution_status_ = static_cast<SolutionStatus>(getUint32FromBuffer(&message_buffer[0]));
   bynav.heading_position_status_ = static_cast<PositionStatus>(getUint32FromBuffer(&message_buffer[4]));
   bynav.heading_baseline_length_ = getFloatFromBuffer(&message_buffer[8]);
-  bynav.yaw_ = getFloatFromBuffer(&message_buffer[12]);
-  bynav.pitch_ = getFloatFromBuffer(&message_buffer[16]);
-  bynav.yaw_std_ = getFloatFromBuffer(&message_buffer[24]);
-  bynav.pitch_std_ = getFloatFromBuffer(&message_buffer[28]);
+  bynav.yaw_ = bynavYawToRep103(getFloatFromBuffer(&message_buffer[12]));
+  bynav.pitch_ = bynavPitchToRep103(getFloatFromBuffer(&message_buffer[16]));
+  bynav.yaw_std_ = common_functions::radians(getFloatFromBuffer(&message_buffer[24]));
+  bynav.pitch_std_ = common_functions::radians(getFloatFromBuffer(&message_buffer[28]));
   bynav.heading_solution_source_ = static_cast<SolutionSource>(message_buffer[40]);
 
   ROS_WARN_STREAM("Parsing heading message");
@@ -231,6 +231,17 @@ inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::ui
           static_cast<std::uint64_t>(b3) << 24 | static_cast<std::uint64_t>(b4) << 32 |
           static_cast<std::uint64_t>(b5) << 40 | static_cast<std::uint64_t>(b6) << 48 |
           static_cast<std::uint64_t>(b7) << 56);
+}
+
+inline float bynavPitchToRep103(float bynav_pitch)
+{
+  // TODO(olek) - check if this is proper transformation
+  return common_functions::radians(bynav_pitch);
+}
+
+inline float bynavYawToRep103(float bynav_yaw)
+{
+  return -common_functions::radians(bynav_yaw - 90);
 }
 
 }  // namespace BynavFrameParser
