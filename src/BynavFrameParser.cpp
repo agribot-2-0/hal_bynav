@@ -158,8 +158,6 @@ void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(
   bynav.yaw_std_ = common_functions::radians(getFloatFromBuffer(&message_buffer[24]));
   bynav.pitch_std_ = common_functions::radians(getFloatFromBuffer(&message_buffer[28]));
   bynav.heading_solution_source_ = static_cast<SolutionSource>(message_buffer[40]);
-
-  ROS_WARN_STREAM("Parsing heading message");
 }
 
 void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(runtime/references)
@@ -182,8 +180,6 @@ void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOL
   bynav.height_std_ = getFloatFromBuffer(&message_buffer[48]);
   bynav.tracked_satellites_n_ = message_buffer[64];
   bynav.solution_satellites_n_ = message_buffer[65];
-
-  ROS_WARN_STREAM("Parsing bestGnssPos message");
 }
 
 inline std::uint16_t getUint16FromBuffer(std::uint8_t* buffer)

@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <ros/ros.h>
-
 #include <cstdint>
 #include <vector>
 #include <utility>
