@@ -6,15 +6,13 @@ pipelines:
         name: "Check cppcheck"
         script:
           - apk add --update bash coreutils tar cppcheck
-          - git submodule update --init --recursive
-          - cppcheck agribot_*
+          - cppcheck src/*
     - step:
         name: "Check cpplint"
         script:
           - apk add --update bash coreutils tar python3 py3-pip
           - pip3 install cpplint==1.4.6
-          - git submodule update --init --recursive
-          - cpplint --recursive agribot_*
+          - cpplint --recursive .
     - step:
         name: "ROS build"
         size: 2x
@@ -22,7 +20,6 @@ pipelines:
           - docker
         script:
           - apk add --update bash coreutils tar
-          - git submodule update --init --recursive
           - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci .industrial_ci -b master
           - git clone https://github.com/panpawelchmiel/agribot_common.git
           - .industrial_ci/bitbucket.sh BUILDER="colcon" ROS_DISTRO="melodic" UPSTREAM_WORKSPACE="agribot_common"
