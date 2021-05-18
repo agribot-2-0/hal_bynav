@@ -87,7 +87,6 @@ void parseFrame(Bynav& bynav, uint8_t* frame_buffer, std::size_t frame_length)  
 
 Header parseHeader(std::uint8_t* frame_buffer)
 {
-  // If sync bytes are wrong throw exception
   Header header;
 
   header.header_length_ = frame_buffer[3];

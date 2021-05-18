@@ -24,7 +24,7 @@ private:
 
   ros::NodeHandle* nh_;
   ros::Publisher nav_sat_fix_publisher_;
-  ros::Publisher imu_publisher_;
+  ros::Publisher heading_publisher_;
   std::string frame_id_;
 
 public:

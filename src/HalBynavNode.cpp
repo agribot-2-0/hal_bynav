@@ -13,7 +13,7 @@ HalBynavNode::HalBynavNode(ros::NodeHandle* nh) : bynav_{}, nh_{ nh }
   bynav_socket_.connectSocket(ip_address, port);
 
   nav_sat_fix_publisher_ = nh_->advertise<sensor_msgs::NavSatFix>("gnss", 1);
-  imu_publisher_ = nh_->advertise<sensor_msgs::Imu>("imu", 1);
+  heading_publisher_ = nh_->advertise<sensor_msgs::Imu>("heading", 1);
 }
 
 HalBynavNode::~HalBynavNode()
@@ -78,7 +78,7 @@ void HalBynavNode::publishImu()
     msg.orientation_covariance[4] = bynav_.pitch_std_ * bynav_.pitch_std_;
     msg.orientation_covariance[8] = bynav_.yaw_std_ * bynav_.yaw_std_;
 
-    imu_publisher_.publish(msg);
+    heading_publisher_.publish(msg);
   }
 }
 
