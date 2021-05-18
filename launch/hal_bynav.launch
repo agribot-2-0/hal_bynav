@@ -3,7 +3,7 @@
 <launch>
 
   <arg name="frame_id"      default="bynav_link" />
-  <arg name="ip_address"    default="192.168.0.164" />
+  <arg name="ip_address"    default="192.168.0.102" />
   <arg name="port"          default="1111" />
 
   <node pkg="hal_bynav" type="hal_bynav_node" name="hal_bynav_node">
