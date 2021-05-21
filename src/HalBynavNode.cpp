@@ -31,17 +31,22 @@ void HalBynavNode::publishNavSatFix()
   if (bynav_.best_gnss_pos_solution_status_ == SolutionStatus::SolComputed)
   {
     // TODO(olek) - select proper PositionStatus for RTK
-    if (bynav_.best_gnss_pos_position_status_ == PositionStatus::WideInt)
+    switch (bynav_.best_gnss_pos_position_status_)
     {
-      msg.status.status = msg.status.STATUS_GBAS_FIX;
-    }
-    else if (bynav_.best_gnss_pos_position_status_ == PositionStatus::Single)
-    {
-      msg.status.status = msg.status.STATUS_FIX;
-    }
-    else
-    {
-      msg.status.status = msg.status.STATUS_NO_FIX;
+      case PositionStatus::WideInt:
+      case PositionStatus::NarrowInt:
+        msg.status.status = msg.status.STATUS_GBAS_FIX;
+        break;
+
+      case PositionStatus::Single:
+        msg.status.status = msg.status.STATUS_FIX;
+        break;
+
+      default:
+        ROS_WARN_STREAM("best_gnss_pos_position_status_ = "
+                        << "is not recognized. Defaulting to STATUS_NO_FIX");
+        msg.status.status = msg.status.STATUS_NO_FIX;
+        break;
     }
   }
   else
