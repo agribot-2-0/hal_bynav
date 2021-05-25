@@ -7,10 +7,10 @@
 HalBynavNode::HalBynavNode(ros::NodeHandle* nh) : bynav_{}, nh_{ nh }
 {
   frame_id_ = ros_common_functions::getRosParam<std::string>("~frame_id");
-  auto ip_address = ros_common_functions::getRosParam<std::string>("~ip_address");
-  std::uint16_t port = ros_common_functions::getRosParam<int>("~port");
+  ip_address_ = ros_common_functions::getRosParam<std::string>("~ip_address");
+  port_ = ros_common_functions::getRosParam<int>("~port");
 
-  bynav_socket_.connectSocket(ip_address, port);
+  bynav_socket_.connectSocket(ip_address_, port_);
 
   nav_sat_fix_publisher_ = nh_->advertise<sensor_msgs::NavSatFix>("gnss", 1);
   heading_publisher_ = nh_->advertise<sensor_msgs::Imu>("heading", 1);
@@ -98,10 +98,24 @@ void HalBynavNode::run()
       ROS_WARN_STREAM(bynav_);
       publishNavSatFix();
       publishImu();
+      error_counter_ = 0;
     }
     catch (const std::exception& e)
     {
       ROS_ERROR_STREAM("[HalBynav]" << e.what());
+
+      if (error_counter_ == MAX_ERRORS_NUMBER)
+      {
+        // Try to reopen socket
+        ROS_WARN_STREAM("[HalBynav] Reconnecting socket...");
+        bynav_socket_.closeSocket();
+        bynav_socket_.connectSocket(ip_address_, port_);
+        error_counter_ = 0;
+      }
+      else
+      {
+        error_counter_++;
+      }
     }
 
     ros::spinOnce();

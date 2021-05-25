@@ -23,8 +23,7 @@ BynavSocket::BynavSocket()
 
 BynavSocket::~BynavSocket()
 {
-  // Close socket file descriptor
-  close(socket_fd_);
+  closeSocket();
 }
 
 void BynavSocket::connectSocket(const std::string& ip_address, std::uint16_t port)
@@ -39,6 +38,12 @@ void BynavSocket::connectSocket(const std::string& ip_address, std::uint16_t por
   {
     throw std::runtime_error("Failed to connect to socket at " + ip_address + ":" + std::to_string(port));
   }
+}
+
+void BynavSocket::closeSocket()
+{
+  // Close socket file descriptor
+  close(socket_fd_);
 }
 
 int BynavSocket::read()

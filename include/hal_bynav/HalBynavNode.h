@@ -25,7 +25,13 @@ private:
   ros::NodeHandle* nh_;
   ros::Publisher nav_sat_fix_publisher_;
   ros::Publisher heading_publisher_;
+
   std::string frame_id_;
+  std::uint16_t port_;
+  std::string ip_address_;
+
+  int error_counter_ = 0;
+  static constexpr int MAX_ERRORS_NUMBER = 10;
 
 public:
   explicit HalBynavNode(ros::NodeHandle* nh);

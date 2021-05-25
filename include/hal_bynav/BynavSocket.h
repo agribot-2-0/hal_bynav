@@ -27,6 +27,7 @@ public:
   BynavSocket();
   ~BynavSocket();
   void connectSocket(const std::string& ip_address, std::uint16_t port);
+  void closeSocket();
   int read();
   uint8_t* getBuffer();
 };
