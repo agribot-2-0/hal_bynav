@@ -12,6 +12,7 @@
 #include <string>
 
 #include "agribot_common/CommonFunctions/ros_common_functions.h"
+#include "agribot_msgs/BynavExtendedData.h"
 #include "hal_bynav/Bynav.h"
 #include "hal_bynav/BynavSocket.h"
 #include "hal_bynav/BynavFrameParser.h"
@@ -25,7 +26,9 @@ private:
   ros::NodeHandle* nh_;
   ros::Publisher nav_sat_fix_publisher_;
   ros::Publisher heading_publisher_;
+  ros::Publisher extended_data_publisher_;
 
+  bool publish_extended_data_;
   std::string frame_id_;
   std::uint16_t port_;
   std::string ip_address_;
@@ -39,4 +42,5 @@ public:
   void run();
   void publishNavSatFix();
   void publishImu();
+  void publishExtendedData();
 };

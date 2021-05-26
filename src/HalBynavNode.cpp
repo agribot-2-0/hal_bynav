@@ -9,11 +9,17 @@ HalBynavNode::HalBynavNode(ros::NodeHandle* nh) : bynav_{}, nh_{ nh }
   frame_id_ = ros_common_functions::getRosParam<std::string>("~frame_id");
   ip_address_ = ros_common_functions::getRosParam<std::string>("~ip_address");
   port_ = ros_common_functions::getRosParam<int>("~port");
+  publish_extended_data_ = ros_common_functions::getRosParam<bool>("~publish_extended_data");
 
   bynav_socket_.connectSocket(ip_address_, port_);
 
   nav_sat_fix_publisher_ = nh_->advertise<sensor_msgs::NavSatFix>("gnss", 1);
   heading_publisher_ = nh_->advertise<sensor_msgs::Imu>("heading", 1);
+
+  if (publish_extended_data_)
+  {
+    extended_data_publisher_ = nh_->advertise<agribot_msgs::BynavExtendedData>("extended_data", 1);
+  }
 }
 
 HalBynavNode::~HalBynavNode()
@@ -43,8 +49,8 @@ void HalBynavNode::publishNavSatFix()
         break;
 
       default:
-        ROS_WARN_STREAM("best_gnss_pos_position_status_ = "
-                        << "is not recognized. Defaulting to STATUS_NO_FIX");
+        ROS_WARN_STREAM("best_gnss_pos_position_status_ = " << static_cast<int>(bynav_.best_gnss_pos_position_status_)
+                                                            << " is not recognized. Defaulting to STATUS_NO_FIX");
         msg.status.status = msg.status.STATUS_NO_FIX;
         break;
     }
@@ -87,6 +93,28 @@ void HalBynavNode::publishImu()
   }
 }
 
+void HalBynavNode::publishExtendedData()
+{
+  auto msg = agribot_msgs::BynavExtendedData();
+
+  msg.best_gnss_pos_solution_status = static_cast<std::uint32_t>(bynav_.best_gnss_pos_solution_status_);
+  msg.best_gnss_pos_position_status = static_cast<std::uint32_t>(bynav_.best_gnss_pos_position_status_);
+  msg.best_gnss_pos_tracked_satellites_n = bynav_.best_gnss_pos_tracked_satellites_n_;
+  msg.best_gnss_pos_solution_satellites_n = bynav_.best_gnss_pos_solution_satellites_n_;
+
+  msg.differential_age = bynav_.differential_age_;
+  msg.solution_age = bynav_.solution_age_;
+
+  msg.heading_solution_status = static_cast<std::uint32_t>(bynav_.heading_solution_status_);
+  msg.heading_position_status = static_cast<std::uint32_t>(bynav_.heading_position_status_);
+  msg.heading_solution_source = static_cast<std::uint8_t>(bynav_.heading_solution_source_);
+  msg.heading_tracked_satellites_n = bynav_.heading_tracked_satellites_n_;
+  msg.heading_solution_satellites_n = bynav_.heading_solution_satellites_n_;
+  msg.heading_baseline_length = bynav_.heading_baseline_length_;
+
+  extended_data_publisher_.publish(msg);
+}
+
 void HalBynavNode::run()
 {
   while (ros::ok())
@@ -95,9 +123,14 @@ void HalBynavNode::run()
     {
       auto frame_length = bynav_socket_.read();
       BynavFrameParser::parsePacket(bynav_, bynav_socket_.getBuffer(), frame_length);
-      ROS_WARN_STREAM(bynav_);
       publishNavSatFix();
       publishImu();
+
+      if (publish_extended_data_)
+      {
+        publishExtendedData();
+      }
+
       error_counter_ = 0;
     }
     catch (const std::exception& e)

@@ -6,6 +6,7 @@ add_compile_options(-std=c++17 -Wall -Wextra -pedantic -Werror)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   agribot_common
+  agribot_msgs
   sensor_msgs
   tf2_geometry_msgs
 )

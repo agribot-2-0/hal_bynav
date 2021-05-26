@@ -69,34 +69,48 @@ enum class SolutionSource
   SecondaryAntenna = 4,
 };
 
+struct ExtendedSolutionStatus
+{
+  std::uint8_t rtk_solution_verified_;
+  std::uint8_t iono_correction_;
+  std::uint8_t rtk_assist_active_;
+  std::uint8_t antenna_status_;
+};
+
 struct Bynav
 {
   // BestGnssPos
   SolutionStatus best_gnss_pos_solution_status_;
   PositionStatus best_gnss_pos_position_status_;
+  ExtendedSolutionStatus best_gnss_pos_extended_solution_status_;
+  std::uint8_t best_gnss_pos_tracked_satellites_n_;
+  std::uint8_t best_gnss_pos_solution_satellites_n_;
 
   double latitude_;
   double longitude_;
   double height_;
 
-  double latitude_std_;
-  double longitude_std_;
-  double height_std_;
+  float latitude_std_;
+  float longitude_std_;
+  float height_std_;
 
-  std::uint8_t tracked_satellites_n_;
-  std::uint8_t solution_satellites_n_;
+  float differential_age_;
+  float solution_age_;
 
   // Heading
   SolutionStatus heading_solution_status_;
   PositionStatus heading_position_status_;
   SolutionSource heading_solution_source_;
+  ExtendedSolutionStatus heading_extended_solution_status_;
+  std::uint8_t heading_tracked_satellites_n_;
+  std::uint8_t heading_solution_satellites_n_;
   float heading_baseline_length_;
 
-  double pitch_;
-  double yaw_;
+  float pitch_;
+  float yaw_;
 
-  double pitch_std_;
-  double yaw_std_;
+  float pitch_std_;
+  float yaw_std_;
 
   Bynav() = default;
   ~Bynav() = default;

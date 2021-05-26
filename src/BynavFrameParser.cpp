@@ -156,7 +156,10 @@ void parseHeadingMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(
   bynav.pitch_ = bynavPitchToRep103(getFloatFromBuffer(&message_buffer[16]));
   bynav.yaw_std_ = common_functions::radians(getFloatFromBuffer(&message_buffer[24]));
   bynav.pitch_std_ = common_functions::radians(getFloatFromBuffer(&message_buffer[28]));
+  bynav.heading_tracked_satellites_n_ = message_buffer[36];
+  bynav.heading_solution_satellites_n_ = message_buffer[37];
   bynav.heading_solution_source_ = static_cast<SolutionSource>(message_buffer[40]);
+  bynav.heading_extended_solution_status_ = getExtendedSolutionStatusFromUint8(message_buffer[41]);
 }
 
 void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOLINT(runtime/references)
@@ -177,8 +180,11 @@ void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOL
   bynav.latitude_std_ = getFloatFromBuffer(&message_buffer[40]);
   bynav.longitude_std_ = getFloatFromBuffer(&message_buffer[44]);
   bynav.height_std_ = getFloatFromBuffer(&message_buffer[48]);
-  bynav.tracked_satellites_n_ = message_buffer[64];
-  bynav.solution_satellites_n_ = message_buffer[65];
+  bynav.differential_age_ = getFloatFromBuffer(&message_buffer[56]);
+  bynav.solution_age_ = getFloatFromBuffer(&message_buffer[60]);
+  bynav.best_gnss_pos_tracked_satellites_n_ = message_buffer[64];
+  bynav.best_gnss_pos_solution_satellites_n_ = message_buffer[65];
+  bynav.best_gnss_pos_extended_solution_status_ = getExtendedSolutionStatusFromUint8(message_buffer[69]);
 }
 
 inline std::uint16_t getUint16FromBuffer(std::uint8_t* buffer)
@@ -237,6 +243,10 @@ inline float bynavPitchToRep103(float bynav_pitch)
 inline float bynavYawToRep103(float bynav_yaw)
 {
   return -common_functions::radians(bynav_yaw - 90);
+}
+
+ExtendedSolutionStatus getExtendedSolutionStatusFromUint8(std::uint8_t byte)
+{
 }
 
 }  // namespace BynavFrameParser

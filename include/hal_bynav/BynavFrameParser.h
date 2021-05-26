@@ -59,5 +59,6 @@ inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::ui
                                        std::uint8_t b4, std::uint8_t b5, std::uint8_t b6, std::uint8_t b7);
 inline float bynavPitchToRep103(float bynav_pitch);
 inline float bynavYawToRep103(float bynav_yaw);
+ExtendedSolutionStatus getExtendedSolutionStatusFromUint8(std::uint8_t byte);
 
 }  // namespace BynavFrameParser
