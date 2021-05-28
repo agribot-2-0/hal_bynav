@@ -107,6 +107,12 @@ void HalBynavNode::publishGnssExtended()
   msg.differential_age = bynav_.differential_age_;
   msg.solution_age = bynav_.solution_age_;
 
+  msg.extended_solution_status.rtk_assist_active = bynav_.heading_extended_solution_status_.rtk_assist_active_;
+  msg.extended_solution_status.iono_correction = bynav_.heading_extended_solution_status_.iono_correction_;
+  msg.extended_solution_status.rtk_solution_verified =
+      bynav_.heading_extended_solution_status_.rtk_solution_verified_;
+  msg.extended_solution_status.antenna_status = bynav_.heading_extended_solution_status_.antenna_status_;
+
   gnss_extended_publisher_.publish(msg);
 }
 
@@ -120,6 +126,12 @@ void HalBynavNode::publishHeadingExtended()
   msg.tracked_satellites_n = bynav_.heading_tracked_satellites_n_;
   msg.solution_satellites_n = bynav_.heading_solution_satellites_n_;
   msg.baseline_length = bynav_.heading_baseline_length_;
+
+  msg.extended_solution_status.rtk_assist_active = bynav_.best_gnss_pos_extended_solution_status_.rtk_assist_active_;
+  msg.extended_solution_status.iono_correction = bynav_.best_gnss_pos_extended_solution_status_.iono_correction_;
+  msg.extended_solution_status.rtk_solution_verified =
+      bynav_.best_gnss_pos_extended_solution_status_.rtk_solution_verified_;
+  msg.extended_solution_status.antenna_status = bynav_.best_gnss_pos_extended_solution_status_.antenna_status_;
 
   heading_extended_publisher_.publish(msg);
 }
