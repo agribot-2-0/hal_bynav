@@ -247,6 +247,14 @@ inline float bynavYawToRep103(float bynav_yaw)
 
 ExtendedSolutionStatus getExtendedSolutionStatusFromUint8(std::uint8_t byte)
 {
+  auto ext_status = ExtendedSolutionStatus{};
+
+  ext_status.rtk_solution_verified_ = (byte & 0x01);
+  ext_status.iono_correction_ = (byte & 0x0E) >> 1;
+  ext_status.rtk_assist_active_ = (byte & 0x10);
+  ext_status.antenna_status_ = (byte & 0x20) >> 5;
+
+  return ext_status;
 }
 
 }  // namespace BynavFrameParser

@@ -71,9 +71,9 @@ enum class SolutionSource
 
 struct ExtendedSolutionStatus
 {
-  std::uint8_t rtk_solution_verified_;
+  bool rtk_solution_verified_;
   std::uint8_t iono_correction_;
-  std::uint8_t rtk_assist_active_;
+  bool rtk_assist_active_;
   std::uint8_t antenna_status_;
 };
 

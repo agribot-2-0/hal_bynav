@@ -18,7 +18,8 @@ HalBynavNode::HalBynavNode(ros::NodeHandle* nh) : bynav_{}, nh_{ nh }
 
   if (publish_extended_data_)
   {
-    extended_data_publisher_ = nh_->advertise<agribot_msgs::BynavExtendedData>("extended_data", 1);
+    gnss_extended_publisher_ = nh_->advertise<agribot_msgs::BynavGnssExtended>("gnss/extended", 1);
+    heading_extended_publisher_ = nh_->advertise<agribot_msgs::BynavHeadingExtended>("heading/extended", 1);
   }
 }
 
@@ -93,26 +94,33 @@ void HalBynavNode::publishImu()
   }
 }
 
-void HalBynavNode::publishExtendedData()
+void HalBynavNode::publishGnssExtended()
 {
-  auto msg = agribot_msgs::BynavExtendedData();
+  auto msg = agribot_msgs::BynavGnssExtended();
 
-  msg.best_gnss_pos_solution_status = static_cast<std::uint32_t>(bynav_.best_gnss_pos_solution_status_);
-  msg.best_gnss_pos_position_status = static_cast<std::uint32_t>(bynav_.best_gnss_pos_position_status_);
-  msg.best_gnss_pos_tracked_satellites_n = bynav_.best_gnss_pos_tracked_satellites_n_;
-  msg.best_gnss_pos_solution_satellites_n = bynav_.best_gnss_pos_solution_satellites_n_;
+  msg.solution_status = static_cast<std::uint32_t>(bynav_.best_gnss_pos_solution_status_);
+  msg.position_status = static_cast<std::uint32_t>(bynav_.best_gnss_pos_position_status_);
+  msg.tracked_satellites_n = bynav_.best_gnss_pos_tracked_satellites_n_;
+  msg.solution_satellites_n = bynav_.best_gnss_pos_solution_satellites_n_;
 
   msg.differential_age = bynav_.differential_age_;
   msg.solution_age = bynav_.solution_age_;
 
-  msg.heading_solution_status = static_cast<std::uint32_t>(bynav_.heading_solution_status_);
-  msg.heading_position_status = static_cast<std::uint32_t>(bynav_.heading_position_status_);
-  msg.heading_solution_source = static_cast<std::uint8_t>(bynav_.heading_solution_source_);
-  msg.heading_tracked_satellites_n = bynav_.heading_tracked_satellites_n_;
-  msg.heading_solution_satellites_n = bynav_.heading_solution_satellites_n_;
-  msg.heading_baseline_length = bynav_.heading_baseline_length_;
+  gnss_extended_publisher_.publish(msg);
+}
 
-  extended_data_publisher_.publish(msg);
+void HalBynavNode::publishHeadingExtended()
+{
+  auto msg = agribot_msgs::BynavHeadingExtended();
+
+  msg.solution_status = static_cast<std::uint32_t>(bynav_.heading_solution_status_);
+  msg.position_status = static_cast<std::uint32_t>(bynav_.heading_position_status_);
+  msg.solution_source = static_cast<std::uint8_t>(bynav_.heading_solution_source_);
+  msg.tracked_satellites_n = bynav_.heading_tracked_satellites_n_;
+  msg.solution_satellites_n = bynav_.heading_solution_satellites_n_;
+  msg.baseline_length = bynav_.heading_baseline_length_;
+
+  heading_extended_publisher_.publish(msg);
 }
 
 void HalBynavNode::run()
@@ -128,7 +136,8 @@ void HalBynavNode::run()
 
       if (publish_extended_data_)
       {
-        publishExtendedData();
+        publishGnssExtended();
+        publishHeadingExtended();
       }
 
       error_counter_ = 0;
