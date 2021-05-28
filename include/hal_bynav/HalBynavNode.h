@@ -36,7 +36,7 @@ private:
   std::string ip_address_;
 
   int error_counter_ = 0;
-  static constexpr int MAX_ERRORS_NUMBER = 10;
+  static constexpr int MAX_ERRORS_NUMBER = 5;
 
 public:
   explicit HalBynavNode(ros::NodeHandle* nh);

@@ -127,6 +127,22 @@ void HalBynavNode::run()
 {
   while (ros::ok())
   {
+    if (error_counter_ >= MAX_ERRORS_NUMBER)
+    {
+      try
+      {
+        ROS_WARN_STREAM("[HalBynav] Reconnecting socket...");
+        bynav_socket_.closeSocket();
+        bynav_socket_.connectSocket(ip_address_, port_);
+        error_counter_ = 0;
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+        continue;
+      }
+    }
+
     try
     {
       auto frame_length = bynav_socket_.read();
@@ -145,19 +161,7 @@ void HalBynavNode::run()
     catch (const std::exception& e)
     {
       ROS_ERROR_STREAM("[HalBynav]" << e.what());
-
-      if (error_counter_ == MAX_ERRORS_NUMBER)
-      {
-        // Try to reopen socket
-        ROS_WARN_STREAM("[HalBynav] Reconnecting socket...");
-        bynav_socket_.closeSocket();
-        bynav_socket_.connectSocket(ip_address_, port_);
-        error_counter_ = 0;
-      }
-      else
-      {
-        error_counter_++;
-      }
+      error_counter_++;
     }
 
     ros::spinOnce();

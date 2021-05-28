@@ -16,8 +16,8 @@ BynavSocket::BynavSocket()
 
   // Set 1 second timeout
   struct timeval tv;
-  tv.tv_sec = 1;
-  tv.tv_usec = 0;
+  tv.tv_sec = 0;
+  tv.tv_usec = 500000;
   setsockopt(socket_fd_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
 }
 
