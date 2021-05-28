@@ -26,6 +26,7 @@ private:
 public:
   BynavSocket();
   ~BynavSocket();
+  void createSocket();
   void connectSocket(const std::string& ip_address, std::uint16_t port);
   void closeSocket();
   int read();

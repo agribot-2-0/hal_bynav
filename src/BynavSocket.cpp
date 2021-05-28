@@ -6,7 +6,15 @@
 
 BynavSocket::BynavSocket()
 {
-  // Create socket
+}
+
+BynavSocket::~BynavSocket()
+{
+  closeSocket();
+}
+
+void BynavSocket::createSocket()
+{
   socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
 
   if (socket_fd_ < 0)
@@ -19,11 +27,6 @@ BynavSocket::BynavSocket()
   tv.tv_sec = 0;
   tv.tv_usec = 500000;
   setsockopt(socket_fd_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
-}
-
-BynavSocket::~BynavSocket()
-{
-  closeSocket();
 }
 
 void BynavSocket::connectSocket(const std::string& ip_address, std::uint16_t port)

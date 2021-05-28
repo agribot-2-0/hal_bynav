@@ -11,6 +11,7 @@ HalBynavNode::HalBynavNode(ros::NodeHandle* nh) : bynav_{}, nh_{ nh }
   port_ = ros_common_functions::getRosParam<int>("~port");
   publish_extended_data_ = ros_common_functions::getRosParam<bool>("~publish_extended_data");
 
+  bynav_socket_.createSocket();
   bynav_socket_.connectSocket(ip_address_, port_);
 
   nav_sat_fix_publisher_ = nh_->advertise<sensor_msgs::NavSatFix>("gnss", 1);
@@ -133,6 +134,7 @@ void HalBynavNode::run()
       {
         ROS_WARN_STREAM("[HalBynav] Reconnecting socket...");
         bynav_socket_.closeSocket();
+        bynav_socket_.createSocket();
         bynav_socket_.connectSocket(ip_address_, port_);
         error_counter_ = 0;
       }
