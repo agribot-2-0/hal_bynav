@@ -22,7 +22,7 @@ void BynavSocket::createSocket()
     throw std::runtime_error("Failed to create socket");
   }
 
-  // Set 1 second timeout
+  // Set 0.5 second timeout
   struct timeval tv;
   tv.tv_sec = 0;
   tv.tv_usec = 500000;
