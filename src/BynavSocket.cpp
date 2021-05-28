@@ -29,6 +29,12 @@ void BynavSocket::createSocket()
   setsockopt(socket_fd_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
 }
 
+void BynavSocket::closeSocket()
+{
+  // Close socket file descriptor
+  close(socket_fd_);
+}
+
 void BynavSocket::connectSocket(const std::string& ip_address, std::uint16_t port)
 {
   struct sockaddr_in server_address;
@@ -43,10 +49,11 @@ void BynavSocket::connectSocket(const std::string& ip_address, std::uint16_t por
   }
 }
 
-void BynavSocket::closeSocket()
+void BynavSocket::reconnectSocket(const std::string& ip_address, std::uint16_t port)
 {
-  // Close socket file descriptor
-  close(socket_fd_);
+  closeSocket();
+  createSocket();
+  connectSocket(ip_address, port);
 }
 
 int BynavSocket::read()
