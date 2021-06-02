@@ -24,6 +24,4 @@
     <remap from="~heading/extended" to="$(arg heading_extended_topic)"/>
   </node>
 
-  <node pkg="tf" type="static_transform_publisher" name="map_bynav_static_transfrom_publisher" args="0 0 0 0 0 0 map bynav_link 100" />
-
 </launch>
