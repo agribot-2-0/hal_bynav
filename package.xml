@@ -28,6 +28,8 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>tf2_geometry_msgs</exec_depend>
 
+  <test_depend>rosunit</test_depend>
+
   <export></export>
 
 </package>
