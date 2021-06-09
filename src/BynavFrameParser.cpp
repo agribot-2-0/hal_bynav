@@ -187,17 +187,17 @@ void parseBestGnssPosMessage(Bynav& bynav, std::uint8_t* message_buffer,  // NOL
   bynav.best_gnss_pos_extended_solution_status_ = getExtendedSolutionStatusFromUint8(message_buffer[69]);
 }
 
-inline std::uint16_t getUint16FromBuffer(std::uint8_t* buffer)
+std::uint16_t getUint16FromBuffer(std::uint8_t* buffer)
 {
   return combineTwoBytes(buffer[0], buffer[1]);
 }
 
-inline std::uint32_t getUint32FromBuffer(std::uint8_t* buffer)
+std::uint32_t getUint32FromBuffer(std::uint8_t* buffer)
 {
   return combineFourBytes(buffer[0], buffer[1], buffer[2], buffer[3]);
 }
 
-inline std::uint64_t getUint64FromBuffer(std::uint8_t* buffer)
+std::uint64_t getUint64FromBuffer(std::uint8_t* buffer)
 {
   return combineEightBytes(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], buffer[6], buffer[7]);
 }
@@ -220,19 +220,19 @@ double getDoubleFromBuffer(std::uint8_t* buffer)
   return double_from_buffer;
 }
 
-inline std::uint16_t combineTwoBytes(std::uint8_t lsb, std::uint8_t msb)
+std::uint16_t combineTwoBytes(std::uint8_t lsb, std::uint8_t msb)
 {
   return (static_cast<std::uint16_t>(lsb) | static_cast<std::uint16_t>(msb) << 8);
 }
 
-inline std::uint32_t combineFourBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3)
+std::uint32_t combineFourBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3)
 {
   return (static_cast<std::uint32_t>(b0) | static_cast<std::uint32_t>(b1) << 8 | static_cast<std::uint32_t>(b2) << 16 |
           static_cast<std::uint32_t>(b3) << 24);
 }
 
-inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3,
-                                       std::uint8_t b4, std::uint8_t b5, std::uint8_t b6, std::uint8_t b7)
+std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3, std::uint8_t b4,
+                                std::uint8_t b5, std::uint8_t b6, std::uint8_t b7)
 {
   return (static_cast<std::uint64_t>(b0) | static_cast<std::uint64_t>(b1) << 8 | static_cast<std::uint64_t>(b2) << 16 |
           static_cast<std::uint64_t>(b3) << 24 | static_cast<std::uint64_t>(b4) << 32 |
@@ -240,13 +240,13 @@ inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::ui
           static_cast<std::uint64_t>(b7) << 56);
 }
 
-inline float bynavPitchToRep103(float bynav_pitch)
+float bynavPitchToRep103(float bynav_pitch)
 {
   // TODO(olek) - check if this is proper transformation
   return common_functions::radians(bynav_pitch);
 }
 
-inline float bynavYawToRep103(float bynav_yaw)
+float bynavYawToRep103(float bynav_yaw)
 {
   return -common_functions::radians(bynav_yaw - 90);
 }
