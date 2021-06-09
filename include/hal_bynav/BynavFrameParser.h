@@ -9,6 +9,7 @@
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 
 #include "agribot_common/CommonFunctions/common_functions.h"
 #include "hal_bynav/Bynav.h"

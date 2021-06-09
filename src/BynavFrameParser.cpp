@@ -204,14 +204,20 @@ inline std::uint64_t getUint64FromBuffer(std::uint8_t* buffer)
 
 float getFloatFromBuffer(std::uint8_t* buffer)
 {
-  auto tmp_uint32 = getUint32FromBuffer(buffer);
-  return *reinterpret_cast<float*>(&tmp_uint32);
+  auto uint32_from_buffer = getUint32FromBuffer(buffer);
+  float float_from_buffer;
+  std::memcpy(&float_from_buffer, &uint32_from_buffer, sizeof(float));
+
+  return float_from_buffer;
 }
 
 double getDoubleFromBuffer(std::uint8_t* buffer)
 {
-  auto tmp_uint64 = getUint64FromBuffer(buffer);
-  return *reinterpret_cast<double*>(&tmp_uint64);
+  auto uint64_from_buffer = getUint64FromBuffer(buffer);
+  double double_from_buffer;
+  std::memcpy(&double_from_buffer, &uint64_from_buffer, sizeof(double));
+
+  return double_from_buffer;
 }
 
 inline std::uint16_t combineTwoBytes(std::uint8_t lsb, std::uint8_t msb)
