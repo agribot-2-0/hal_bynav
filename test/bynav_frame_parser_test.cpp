@@ -2,9 +2,9 @@
  * Copyright (C) 2021 Agribot. All rights reserved.
  */
 
+#include <gtest/gtest.h>
 #include <cstring>
 
-#include <gtest/gtest.h>
 #include "hal_bynav/BynavFrameParser.h"
 
 TEST(BynavFrameParserTest, ParseDoubleFromBuffer)
