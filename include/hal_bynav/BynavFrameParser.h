@@ -52,7 +52,7 @@ inline std::uint16_t getUint16FromBuffer(std::uint8_t* buffer);
 inline std::uint32_t getUint32FromBuffer(std::uint8_t* buffer);
 inline std::uint64_t getUint64FromBuffer(std::uint8_t* buffer);
 float getFloatFromBuffer(std::uint8_t* buffer);
-float getDoubleFromBuffer(std::uint8_t* buffer);
+double getDoubleFromBuffer(std::uint8_t* buffer);
 inline std::uint16_t combineTwoBytes(std::uint8_t lsb, std::uint8_t msb);
 inline std::uint32_t combineFourBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3);
 inline std::uint64_t combineEightBytes(std::uint8_t b0, std::uint8_t b1, std::uint8_t b2, std::uint8_t b3,

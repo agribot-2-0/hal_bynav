@@ -208,7 +208,7 @@ float getFloatFromBuffer(std::uint8_t* buffer)
   return *reinterpret_cast<float*>(&tmp_uint32);
 }
 
-float getDoubleFromBuffer(std::uint8_t* buffer)
+double getDoubleFromBuffer(std::uint8_t* buffer)
 {
   auto tmp_uint64 = getUint64FromBuffer(buffer);
   return *reinterpret_cast<double*>(&tmp_uint64);
