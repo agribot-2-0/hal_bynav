@@ -96,12 +96,13 @@ Header parseHeader(std::uint8_t* frame_buffer)
   return header;
 }
 
-void checkCrc(std::uint8_t* frame_buffer, std::size_t frame_length)
+void checkCrc(std::uint8_t* frame_buffer, std::size_t frame_length_with_crc)
 {
-  auto crc_in_frame = combineFourBytes(frame_buffer[frame_length - 4], frame_buffer[frame_length - 3],
-                                       frame_buffer[frame_length - 2], frame_buffer[frame_length - 1]);
+  auto crc_in_frame =
+      combineFourBytes(frame_buffer[frame_length_with_crc - 4], frame_buffer[frame_length_with_crc - 3],
+                       frame_buffer[frame_length_with_crc - 2], frame_buffer[frame_length_with_crc - 1]);
 
-  auto calculated_crc = calculateCrcForFrame(frame_buffer, frame_length - crc_length);
+  auto calculated_crc = calculateCrcForFrame(frame_buffer, frame_length_with_crc - crc_length);
 
   if (crc_in_frame != calculated_crc)
   {
@@ -116,17 +117,17 @@ std::uint32_t calculateCrcForFrame(std::uint8_t* frame_buffer, std::size_t frame
   for (std::size_t i = 0; i < frame_length; i++)
   {
     auto tmp1 = (crc >> 8) & 0x00FFFFFFL;
-    auto tmp2 = calculateCrc((crc ^ frame_buffer[i]) & 0xFF);
+    auto tmp2 = calculateCrcForUint64((crc ^ frame_buffer[i]) & 0xFF);
     crc = tmp1 ^ tmp2;
   }
   return static_cast<std::uint32_t>(crc);
 }
 
-std::uint64_t calculateCrc(std::uint64_t value)
+std::uint64_t calculateCrcForUint64(std::uint64_t value)
 {
   std::uint64_t crc = value;
 
-  for (size_t i = 8; i > 0; --i)
+  for (std::size_t i = 8; i > 0; --i)
   {
     if (crc & 1)
     {
