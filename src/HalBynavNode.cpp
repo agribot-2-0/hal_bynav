@@ -165,8 +165,8 @@ void HalBynavNode::run()
 
     try
     {
-      auto frame_length = bynav_socket_.read();
-      BynavFrameParser::parsePacket(bynav_, bynav_socket_.getBuffer(), frame_length);
+      auto buffer_length = bynav_socket_.read();
+      BynavFrameParser::parsePacket(bynav_, bynav_socket_.getBuffer(), buffer_length);
       publishNavSatFix();
       publishImu();
 
