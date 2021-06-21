@@ -21,6 +21,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${agribot_common_SOURCE_DIR}/include
 )
 
 add_executable(hal_bynav_node 
@@ -29,6 +30,11 @@ add_executable(hal_bynav_node
   src/BynavSocket.cpp
   src/BynavFrameParser.cpp
   src/Bynav.cpp
+
+  src/BynavParser.cpp
+  src/BynavFrameFactory.cpp
+  src/HeadingFrame.cpp
+  src/BestGnssPosFrame.cpp
 )
 target_link_libraries(hal_bynav_node ${catkin_LIBRARIES})
 add_dependencies(hal_bynav_node ${catkin_EXPORTED_TARGETS})
@@ -48,6 +54,11 @@ install(DIRECTORY launch
 #############
 
 if (CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(bynav_frame_parser-test test/bynav_frame_parser_test.cpp src/BynavFrameParser.cpp)
-  target_link_libraries(bynav_frame_parser-test ${catkin_LIBRARIES} gtest)
+  catkin_add_gtest(bynav-test
+    test/bynav_test.cpp
+    src/BynavFrameFactory.cpp
+    src/HeadingFrame.cpp
+    src/BestGnssPosFrame.cpp
+  )
+  target_link_libraries(bynav-test ${catkin_LIBRARIES} gtest)
 endif()
