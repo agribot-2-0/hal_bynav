@@ -27,12 +27,9 @@ include_directories(
 add_executable(hal_bynav_node 
   src/hal_bynav_node.cpp
   src/HalBynavNode.cpp
-  src/BynavSocket.cpp
-  src/BynavFrameParser.cpp
-  src/Bynav.cpp
-
   src/BynavParser.cpp
   src/BynavFrameFactory.cpp
+  src/BynavFrame.cpp
   src/HeadingFrame.cpp
   src/BestGnssPosFrame.cpp
 )
@@ -56,7 +53,9 @@ install(DIRECTORY launch
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(bynav-test
     test/bynav_test.cpp
+    src/BynavParser.cpp
     src/BynavFrameFactory.cpp
+    src/BynavFrame.cpp
     src/HeadingFrame.cpp
     src/BestGnssPosFrame.cpp
   )
