@@ -6,6 +6,9 @@
 
 #include <hal_bynav/BynavFrame.h>
 
+#include <string>
+#include <vector>
+
 struct BestGnssPosFrame : public BynavFrame
 {
   BestGnssPosFrame() = default;
@@ -16,7 +19,7 @@ struct BestGnssPosFrame : public BynavFrame
   BestGnssPosFrame& operator=(BestGnssPosFrame&& other) = default;
 
   void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-             IParsingStrategy& strategy) override;  // NOLINT(runtime/references)
+             const IParsingStrategy& strategy) override;
 
   static constexpr uint64_t ID = { 1429 };
 

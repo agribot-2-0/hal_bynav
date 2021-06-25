@@ -7,7 +7,10 @@
 #include <agribot_common/connection/IParser.h>
 
 #include <algorithm>
+#include <memory>
 #include <queue>
+#include <unordered_map>
+#include <vector>
 
 class BynavParser : public IParser
 {

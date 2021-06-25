@@ -7,6 +7,7 @@
 #include <hal_bynav/BynavFrame.h>
 
 #include <string>
+#include <vector>
 
 struct HeadingFrame : public BynavFrame
 {
@@ -18,7 +19,7 @@ struct HeadingFrame : public BynavFrame
   HeadingFrame& operator=(HeadingFrame&& other) = default;
 
   void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-             IParsingStrategy& strategy) override;  // NOLINT(runtime/references)
+             const IParsingStrategy& strategy) override;
 
   static constexpr uint64_t ID = { 971 };
 

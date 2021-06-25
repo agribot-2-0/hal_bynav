@@ -5,7 +5,7 @@
 #include <hal_bynav/BestGnssPosFrame.h>
 
 void BestGnssPosFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                             IParsingStrategy& strategy)
+                             const IParsingStrategy& strategy)
 {
   // Parse and validate part common for all Bynav frames
   BynavFrame::parse(begin_it, end_it, strategy);
@@ -14,7 +14,7 @@ void BestGnssPosFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vecto
   if (message_id_ != ID)
   {
     // Shouldn't happen as frame creation is controlled with BynavFrameFactory, but double-check just in case
-    // TODO - use custom exception?
+    // TODO(olek) - use custom exception?
     throw std::runtime_error("ID missmatch");
   }
 

@@ -12,13 +12,11 @@
 #include <memory>
 #include <string>
 
-#include <agribot_common/connection/Buffer.h>
-#include <agribot_common/connection/IParser.h>
-#include <agribot_common/connection/ISocket.h>
-
-#include <hal_bynav/BestGnssPosFrame.h>
-#include <hal_bynav/HeadingFrame.h>
-
+#include "hal_bynav/BestGnssPosFrame.h"
+#include "hal_bynav/HeadingFrame.h"
+#include "agribot_common/connection/Buffer.h"
+#include "agribot_common/connection/IParser.h"
+#include "agribot_common/connection/ISocket.h"
 #include "agribot_common/CommonFunctions/ros_common_functions.h"
 #include "agribot_msgs/BynavGnssExtended.h"
 #include "agribot_msgs/BynavHeadingExtended.h"

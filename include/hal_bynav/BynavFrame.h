@@ -7,6 +7,7 @@
 #include <agribot_common/connection/IFrame.h>
 
 #include <stdexcept>
+#include <vector>
 
 enum class SolutionStatus
 {
@@ -78,7 +79,7 @@ struct ExtendedSolutionStatus
   bool rtk_assist_active_;
   uint8_t antenna_status_;
 
-  ExtendedSolutionStatus(uint8_t byte)
+  explicit ExtendedSolutionStatus(uint8_t byte)
   {
     rtk_solution_verified_ = (byte & 0x01);
     iono_correction_ = (byte & 0x0E) >> 1;
@@ -103,10 +104,10 @@ struct BynavFrame : public IFrame
   BynavFrame& operator=(const BynavFrame& other) = delete;
   BynavFrame& operator=(BynavFrame&& other) = delete;
 
-  virtual void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                     IParsingStrategy& strategy) override;  // NOLINT(runtime/references)
+  void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+             const IParsingStrategy& strategy) override;
   uint32_t calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                        IParsingStrategy& strategy);
+                        const IParsingStrategy& strategy);
   uint64_t calculateCrcForUint64(uint64_t value);
 
   static constexpr uint8_t CRC_LENGTH = { 4 };

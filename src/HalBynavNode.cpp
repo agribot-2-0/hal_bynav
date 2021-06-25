@@ -79,7 +79,7 @@ void HalBynavNode::printBestGnssPosFrame(const IFrame& iframe)
 {
   auto frame = dynamic_cast<const BestGnssPosFrame*>(&iframe);
 
-  // TODO - print other data
+  // TODO(olek) - print other data
   ROS_WARN_STREAM("[HalBynavNode] Latitude: " << frame->latitude_);
 }
 
@@ -87,7 +87,7 @@ void HalBynavNode::printHeadingFrame(const IFrame& iframe)
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
 
-  // TODO - print other data
+  // TODO(olek) - print other data
   ROS_WARN_STREAM("[HalBynavNode] Baseline length: " << frame->baseline_length_);
 }
 
@@ -95,7 +95,7 @@ sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const Best
 {
   sensor_msgs::NavSatFix msg;
 
-  // TODO - fill in other data
+  // TODO(olek) - fill in other data
   msg.latitude = frame.latitude_;
 
   return msg;
@@ -105,7 +105,7 @@ agribot_msgs::BynavGnssExtended HalBynavNode::bynavGnssExtendedMsgFromBestGnssPo
 {
   agribot_msgs::BynavGnssExtended msg;
 
-  // TODO - fill in other data
+  // TODO(olek) - fill in other data
   static_cast<void>(frame);
 
   return msg;
@@ -115,7 +115,7 @@ sensor_msgs::Imu HalBynavNode::imuMsgFromHeadingFrame(const HeadingFrame& frame)
 {
   sensor_msgs::Imu msg;
 
-  // TODO - fill in other data
+  // TODO(olek) - fill in other data
   static_cast<void>(frame);
 
   return msg;
@@ -125,7 +125,7 @@ agribot_msgs::BynavHeadingExtended HalBynavNode::bynavHeadingExtendedMsgFromHead
 {
   agribot_msgs::BynavHeadingExtended msg;
 
-  // TODO - fill in other data
+  // TODO(olek) - fill in other data
   static_cast<void>(frame);
 
   return msg;

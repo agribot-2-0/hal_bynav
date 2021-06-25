@@ -5,7 +5,7 @@
 #include <hal_bynav/BynavFrame.h>
 
 void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                       IParsingStrategy& strategy)
+                       const IParsingStrategy& strategy)
 {
   // TODO(olek)
   // Parse housekeeping data
@@ -19,13 +19,13 @@ void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint
   if (auto expected_length = std::distance(begin_it, end_it);
       expected_length != (header_length_ + message_length_ + CRC_LENGTH))  // TODO(olek) - Maybe minus SYNC_BYTES_LENGTH
   {
-    // TODO - use custom exception?
+    // TODO(olek) - use custom exception?
     throw std::runtime_error("Frame length missmatch");
   }
 }
 
 uint32_t BynavFrame::calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                                  IParsingStrategy& strategy)
+                                  const IParsingStrategy& strategy)
 {
   uint64_t crc = 0;
 
