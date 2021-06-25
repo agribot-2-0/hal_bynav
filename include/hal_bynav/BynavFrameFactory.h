@@ -20,5 +20,5 @@ public:
   BynavFrameFactory(BynavFrameFactory&& other) = default;
   BynavFrameFactory& operator=(const BynavFrameFactory& other) = default;
   BynavFrameFactory& operator=(BynavFrameFactory&& other) = default;
-  std::unique_ptr<IFrame> createFrame(uint64_t id) override;
+  std::unique_ptr<IFrame> createFrame(uint64_t id) const override;
 };

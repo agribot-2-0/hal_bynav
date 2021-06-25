@@ -4,7 +4,7 @@
 
 #include <hal_bynav/BynavFrameFactory.h>
 
-std::unique_ptr<IFrame> BynavFrameFactory::createFrame(uint64_t id)
+std::unique_ptr<IFrame> BynavFrameFactory::createFrame(uint64_t id) const
 {
   switch (id)
   {

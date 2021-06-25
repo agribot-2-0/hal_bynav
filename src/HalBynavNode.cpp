@@ -39,7 +39,7 @@ HalBynavNode::HalBynavNode(ros::NodeHandle* nh, std::unique_ptr<IParser> parser,
   }
 }
 
-void HalBynavNode::publishNavSatFix(const IFrame& iframe)
+void HalBynavNode::publishNavSatFix(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const BestGnssPosFrame*>(&iframe);
 
@@ -50,14 +50,14 @@ void HalBynavNode::publishNavSatFix(const IFrame& iframe)
   nav_sat_fix_publisher_.publish(msg);
 }
 
-void HalBynavNode::publishGnssExtended(const IFrame& iframe)
+void HalBynavNode::publishGnssExtended(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const BestGnssPosFrame*>(&iframe);
   auto msg = bynavGnssExtendedMsgFromBestGnssPosFrame(*frame);
   nav_sat_fix_publisher_.publish(msg);
 }
 
-void HalBynavNode::publishImu(const IFrame& iframe)
+void HalBynavNode::publishImu(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
 
@@ -71,14 +71,14 @@ void HalBynavNode::publishImu(const IFrame& iframe)
   }
 }
 
-void HalBynavNode::publishHeadingExtended(const IFrame& iframe)
+void HalBynavNode::publishHeadingExtended(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
   auto msg = bynavHeadingExtendedMsgFromHeadingFrame(*frame);
   nav_sat_fix_publisher_.publish(msg);
 }
 
-void HalBynavNode::printBestGnssPosFrame(const IFrame& iframe)
+void HalBynavNode::printBestGnssPosFrame(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const BestGnssPosFrame*>(&iframe);
 
@@ -110,7 +110,7 @@ void HalBynavNode::printBestGnssPosFrame(const IFrame& iframe)
                   << "GPS & Glonass signal mask: " << frame->gps_glonass_signal_mask_ << std::endl);
 }
 
-void HalBynavNode::printHeadingFrame(const IFrame& iframe)
+void HalBynavNode::printHeadingFrame(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
 
@@ -139,7 +139,7 @@ void HalBynavNode::printHeadingFrame(const IFrame& iframe)
                   << "GPS & Glonass signal mask: " << frame->gps_glonass_signal_mask_ << std::endl);
 }
 
-sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame)
+sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const
 {
   sensor_msgs::NavSatFix msg;
 
@@ -181,7 +181,8 @@ sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const Best
   return msg;
 }
 
-agribot_msgs::BynavGnssExtended HalBynavNode::bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame)
+agribot_msgs::BynavGnssExtended
+HalBynavNode::bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const
 {
   agribot_msgs::BynavGnssExtended msg;
 
@@ -201,7 +202,7 @@ agribot_msgs::BynavGnssExtended HalBynavNode::bynavGnssExtendedMsgFromBestGnssPo
   return msg;
 }
 
-sensor_msgs::Imu HalBynavNode::imuMsgFromHeadingFrame(const HeadingFrame& frame)
+sensor_msgs::Imu HalBynavNode::imuMsgFromHeadingFrame(const HeadingFrame& frame) const
 {
   sensor_msgs::Imu msg;
 
@@ -219,7 +220,8 @@ sensor_msgs::Imu HalBynavNode::imuMsgFromHeadingFrame(const HeadingFrame& frame)
   return msg;
 }
 
-agribot_msgs::BynavHeadingExtended HalBynavNode::bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame)
+agribot_msgs::BynavHeadingExtended
+HalBynavNode::bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame) const
 {
   agribot_msgs::BynavHeadingExtended msg;
 
@@ -238,7 +240,7 @@ agribot_msgs::BynavHeadingExtended HalBynavNode::bynavHeadingExtendedMsgFromHead
   return msg;
 }
 
-void HalBynavNode::run()
+void HalBynavNode::run() const
 {
   while (ros::ok())
   {

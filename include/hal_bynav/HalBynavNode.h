@@ -38,21 +38,21 @@ private:
   bool print_debug_info_;
   std::string frame_id_;
 
-  sensor_msgs::NavSatFix navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame);
-  agribot_msgs::BynavGnssExtended bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame);
-  sensor_msgs::Imu imuMsgFromHeadingFrame(const HeadingFrame& frame);
-  agribot_msgs::BynavHeadingExtended bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame);
+  sensor_msgs::NavSatFix navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const;
+  agribot_msgs::BynavGnssExtended bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const;
+  sensor_msgs::Imu imuMsgFromHeadingFrame(const HeadingFrame& frame) const;
+  agribot_msgs::BynavHeadingExtended bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame) const;
 
 public:
   explicit HalBynavNode(ros::NodeHandle* nh, std::unique_ptr<IParser> parser, std::unique_ptr<ISocket> socket,
                         std::unique_ptr<Buffer> buffer);
-  void run();
+  void run() const;
 
-  void publishNavSatFix(const IFrame& i_frame);
-  void publishGnssExtended(const IFrame& i_frame);
-  void publishImu(const IFrame& i_frame);
-  void publishHeadingExtended(const IFrame& i_frame);
+  void publishNavSatFix(const IFrame& i_frame) const;
+  void publishGnssExtended(const IFrame& i_frame) const;
+  void publishImu(const IFrame& i_frame) const;
+  void publishHeadingExtended(const IFrame& i_frame) const;
 
-  void printBestGnssPosFrame(const IFrame& i_frame);
-  void printHeadingFrame(const IFrame& i_frame);
+  void printBestGnssPosFrame(const IFrame& i_frame) const;
+  void printHeadingFrame(const IFrame& i_frame) const;
 };

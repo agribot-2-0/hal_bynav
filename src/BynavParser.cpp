@@ -40,7 +40,7 @@ void BynavParser::getFrameBuffersFromPacketBuffer(Buffer& packet_buffer)
   packet_buffer.buffer_.clear();
 }
 
-bool BynavParser::haveFrameBufferToParse()
+bool BynavParser::haveFrameBufferToParse() const
 {
   return (frame_buffers_.size() > 0);
 }

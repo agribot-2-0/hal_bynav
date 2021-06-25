@@ -26,7 +26,7 @@ public:
   BynavParser& operator=(BynavParser&& other) = default;
 
   void getFrameBuffersFromPacketBuffer(Buffer& packet_buffer) override;
-  bool haveFrameBufferToParse() override;
+  bool haveFrameBufferToParse() const override;
   void parseFrameBuffer() override;
   void registerCallback(uint64_t id, const Callback& callback) override;
   std::queue<Buffer> getFrameBuffersQueue();
