@@ -4,16 +4,39 @@
 
 #pragma once
 
-#include <agribot_common/connection/IFrame.h>
+#include <hal_bynav/BynavFrame.h>
 
-class HeadingFrame : public IFrame
+#include <string>
+
+struct HeadingFrame : public BynavFrame
 {
-private:
-  float baseline_length_;
-
-public:
   HeadingFrame() = default;
   ~HeadingFrame() = default;
+  HeadingFrame(const HeadingFrame& other) = default;
+  HeadingFrame(HeadingFrame&& other) = default;
+  HeadingFrame& operator=(const HeadingFrame& other) = default;
+  HeadingFrame& operator=(HeadingFrame&& other) = default;
+
   void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
              IParsingStrategy& strategy) override;  // NOLINT(runtime/references)
+
+  static constexpr uint64_t ID = { 971 };
+
+  // Main data
+  SolutionStatus solution_status_;
+  PositionStatus heading_status_;
+  float baseline_length_;
+  float heading_;
+  float pitch_;
+  float heading_std_;
+  float pitch_std_;
+  std::string station_id_;
+  uint8_t tracked_satellites_n_;
+  uint8_t solution_satellites_n_;
+  uint8_t above_elevation_satellites_n_;
+  uint8_t l2_above_elevation_satellites_n_;
+  SolutionSource solution_source_;
+  ExtendedSolutionStatus extended_solution_status_;
+  uint8_t galileo_beidou_signal_mask_;
+  uint8_t gps_glonass_signal_mask_;
 };
