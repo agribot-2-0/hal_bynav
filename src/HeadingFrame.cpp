@@ -36,10 +36,10 @@ void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<ui
   solution_status_ = static_cast<SolutionStatus>(strategy.getUint32(std::next(main_data_begin_it, 0)));
   heading_status_ = static_cast<PositionStatus>(strategy.getUint32(std::next(main_data_begin_it, 4)));
   baseline_length_ = strategy.getFloat(std::next(main_data_begin_it, 8));
-  heading_ = strategy.getFloat(std::next(main_data_begin_it, 12));
-  pitch_ = strategy.getFloat(std::next(main_data_begin_it, 16));
-  heading_std_ = strategy.getFloat(std::next(main_data_begin_it, 24));
-  pitch_std_ = strategy.getFloat(std::next(main_data_begin_it, 28));
+  heading_ = bynavHeadingToRep103(strategy.getFloat(std::next(main_data_begin_it, 12)));
+  pitch_ = bynavPitchToRep103(strategy.getFloat(std::next(main_data_begin_it, 16)));
+  heading_std_ = common_functions::radians(strategy.getFloat(std::next(main_data_begin_it, 24)));
+  pitch_std_ = common_functions::radians(strategy.getFloat(std::next(main_data_begin_it, 28)));
   station_id_ = strategy.getString(std::next(main_data_begin_it, 32), std::next(main_data_begin_it, 36));
   tracked_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, 36));
   solution_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, 37));
@@ -49,4 +49,15 @@ void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<ui
   extended_solution_status_ = ExtendedSolutionStatus(strategy.getUint8(std::next(main_data_begin_it, 41)));
   galileo_beidou_signal_mask_ = strategy.getUint8(std::next(main_data_begin_it, 42));
   gps_glonass_signal_mask_ = strategy.getUint8(std::next(main_data_begin_it, 43));
+}
+
+float HeadingFrame::bynavHeadingToRep103(float bynav_heading)
+{
+  return -common_functions::radians(bynav_heading - 90.0f);
+}
+
+float HeadingFrame::bynavPitchToRep103(float bynav_pitch)
+{
+  // TODO(olek) - check if this is proper transformation
+  return common_functions::radians(bynav_pitch);
 }

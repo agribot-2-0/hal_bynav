@@ -61,11 +61,14 @@ void HalBynavNode::publishImu(const IFrame& iframe)
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
 
-  auto msg = imuMsgFromHeadingFrame(*frame);
-  msg.header.frame_id = frame_id_;
-  msg.header.stamp = ros::Time::now();
+  if (frame->solution_status_ == SolutionStatus::SolComputed)
+  {
+    auto msg = imuMsgFromHeadingFrame(*frame);
+    msg.header.frame_id = frame_id_;
+    msg.header.stamp = ros::Time::now();
 
-  heading_publisher_.publish(msg);
+    heading_publisher_.publish(msg);
+  }
 }
 
 void HalBynavNode::publishHeadingExtended(const IFrame& iframe)
@@ -79,24 +82,101 @@ void HalBynavNode::printBestGnssPosFrame(const IFrame& iframe)
 {
   auto frame = dynamic_cast<const BestGnssPosFrame*>(&iframe);
 
-  // TODO(olek) - print other data
-  ROS_WARN_STREAM("[HalBynavNode] Latitude: " << frame->latitude_);
+  ROS_WARN_STREAM("[HalBynavNode][BestGnssPosFrame]"
+                  << std::endl
+                  << "Solution status: " << static_cast<int>(frame->solution_status_) << std::endl
+                  << "Position status: " << static_cast<int>(frame->position_status_) << std::endl
+                  << "Latitude: " << frame->latitude_ << std::endl
+                  << "Longitude: " << frame->longitude_ << std::endl
+                  << "Undulation: " << frame->undulation_ << std::endl
+                  << "Datum ID: " << frame->datum_id_ << std::endl
+                  << "Latitude std: " << frame->latitude_std_ << std::endl
+                  << "Longitude std: " << frame->longitude_std_ << std::endl
+                  << "Altitude std: " << frame->altitude_std_ << std::endl
+                  << "Station ID: " << frame->station_id_ << std::endl
+                  << "Differential age [s]: " << frame->differential_age_s << std::endl
+                  << "Solution age [s]: " << frame->solution_age_s << std::endl
+                  << "Tracked satellites: " << frame->tracked_satellites_n_ << std::endl
+                  << "Solution satellites: " << frame->solution_satellites_n_ << std::endl
+                  << "L1 solution satellites: " << frame->l1_solution_satellites_n_ << std::endl
+                  << "Multifreq solution satellites: " << frame->multi_solution_satellites_n_ << std::endl
+                  << " === Extended solution status === " << std::endl
+                  << "\tRTK solution verified: " << frame->extended_solution_status_.rtk_solution_verified_ << std::endl
+                  << "\tIono correction: " << frame->extended_solution_status_.iono_correction_ << std::endl
+                  << "\tRTK assist active: " << frame->extended_solution_status_.rtk_assist_active_ << std::endl
+                  << "\tAntenna status: " << frame->extended_solution_status_.antenna_status_ << std::endl
+                  << " ================================ " << std::endl
+                  << "Galileo & Beidou signal mask: " << frame->galileo_beidou_signal_mask_ << std::endl
+                  << "GPS & Glonass signal mask: " << frame->gps_glonass_signal_mask_ << std::endl);
 }
 
 void HalBynavNode::printHeadingFrame(const IFrame& iframe)
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
 
-  // TODO(olek) - print other data
-  ROS_WARN_STREAM("[HalBynavNode] Baseline length: " << frame->baseline_length_);
+  ROS_WARN_STREAM("[HalBynavNode][HeadingFrame]"
+                  << std::endl
+                  << "Solution status: " << static_cast<int>(frame->solution_status_) << std::endl
+                  << "Heading status: " << static_cast<int>(frame->heading_status_) << std::endl
+                  << "Baseline length: " << frame->baseline_length_ << std::endl
+                  << "Heading: " << frame->heading_ << std::endl
+                  << "Pitch: " << frame->pitch_ << std::endl
+                  << "Heading std: " << frame->heading_std_ << std::endl
+                  << "Pitch std: " << frame->pitch_std_ << std::endl
+                  << "Station ID: " << frame->station_id_ << std::endl
+                  << "Tracked satellites: " << frame->tracked_satellites_n_ << std::endl
+                  << "Solution satellites: " << frame->solution_satellites_n_ << std::endl
+                  << "Above elevation satellites: " << frame->above_elevation_satellites_n_ << std::endl
+                  << "L2 Above elevation satellites: " << frame->l2_above_elevation_satellites_n_ << std::endl
+                  << "Solution source: " << static_cast<int>(frame->solution_source_) << std::endl
+                  << " === Extended solution status === " << std::endl
+                  << "\tRTK solution verified: " << frame->extended_solution_status_.rtk_solution_verified_ << std::endl
+                  << "\tIono correction: " << frame->extended_solution_status_.iono_correction_ << std::endl
+                  << "\tRTK assist active: " << frame->extended_solution_status_.rtk_assist_active_ << std::endl
+                  << "\tAntenna status: " << frame->extended_solution_status_.antenna_status_ << std::endl
+                  << " ================================ " << std::endl
+                  << "Galileo & Beidou signal mask: " << frame->galileo_beidou_signal_mask_ << std::endl
+                  << "GPS & Glonass signal mask: " << frame->gps_glonass_signal_mask_ << std::endl);
 }
 
 sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame)
 {
   sensor_msgs::NavSatFix msg;
 
-  // TODO(olek) - fill in other data
+  if (frame.solution_status_ == SolutionStatus::SolComputed)
+  {
+    switch (frame.position_status_)
+    {
+      case PositionStatus::WideInt:
+      case PositionStatus::NarrowInt:
+        msg.status.status = msg.status.STATUS_GBAS_FIX;
+        break;
+
+      case PositionStatus::Single:
+        msg.status.status = msg.status.STATUS_FIX;
+        break;
+
+      default:
+        ROS_WARN_STREAM("[HalBynavNode][BestGnssPosFrame] position_status_ = "
+                        << static_cast<int>(frame.solution_status_)
+                        << " is not recognized. Defaulting to STATUS_NO_FIX");
+        msg.status.status = msg.status.STATUS_NO_FIX;
+        break;
+    }
+  }
+  else
+  {
+    msg.status.status = msg.status.STATUS_NO_FIX;
+  }
+
   msg.latitude = frame.latitude_;
+  msg.longitude = frame.longitude_;
+  msg.altitude = frame.altitude_;
+
+  msg.position_covariance[0] = frame.latitude_std_ * frame.latitude_std_;
+  msg.position_covariance[4] = frame.longitude_std_ * frame.longitude_std_;
+  msg.position_covariance[8] = frame.altitude_std_ * frame.altitude_std_;
+  msg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_DIAGONAL_KNOWN;
 
   return msg;
 }
@@ -105,8 +185,18 @@ agribot_msgs::BynavGnssExtended HalBynavNode::bynavGnssExtendedMsgFromBestGnssPo
 {
   agribot_msgs::BynavGnssExtended msg;
 
-  // TODO(olek) - fill in other data
-  static_cast<void>(frame);
+  msg.solution_status = static_cast<std::uint32_t>(frame.solution_status_);
+  msg.position_status = static_cast<std::uint32_t>(frame.position_status_);
+  msg.tracked_satellites_n = frame.tracked_satellites_n_;
+  msg.solution_satellites_n = frame.solution_satellites_n_;
+
+  msg.differential_age = frame.differential_age_s;
+  msg.solution_age = frame.solution_age_s;
+
+  msg.extended_solution_status.rtk_assist_active = frame.extended_solution_status_.rtk_assist_active_;
+  msg.extended_solution_status.iono_correction = frame.extended_solution_status_.iono_correction_;
+  msg.extended_solution_status.rtk_solution_verified = frame.extended_solution_status_.rtk_solution_verified_;
+  msg.extended_solution_status.antenna_status = frame.extended_solution_status_.antenna_status_;
 
   return msg;
 }
@@ -115,8 +205,16 @@ sensor_msgs::Imu HalBynavNode::imuMsgFromHeadingFrame(const HeadingFrame& frame)
 {
   sensor_msgs::Imu msg;
 
-  // TODO(olek) - fill in other data
-  static_cast<void>(frame);
+  msg.header.frame_id = frame_id_;
+  msg.header.stamp = ros::Time::now();
+
+  tf2::Quaternion quat;
+  quat.setRPY(0.0, frame.pitch_, frame.heading_);
+  msg.orientation = tf2::toMsg(quat);
+
+  msg.orientation_covariance[0] = 0.0;
+  msg.orientation_covariance[4] = frame.pitch_std_ * frame.pitch_std_;
+  msg.orientation_covariance[8] = frame.heading_std_ * frame.heading_std_;
 
   return msg;
 }
@@ -125,8 +223,17 @@ agribot_msgs::BynavHeadingExtended HalBynavNode::bynavHeadingExtendedMsgFromHead
 {
   agribot_msgs::BynavHeadingExtended msg;
 
-  // TODO(olek) - fill in other data
-  static_cast<void>(frame);
+  msg.solution_status = static_cast<std::uint32_t>(frame.solution_status_);
+  msg.position_status = static_cast<std::uint32_t>(frame.heading_status_);
+  msg.solution_source = static_cast<std::uint8_t>(frame.solution_source_);
+  msg.tracked_satellites_n = frame.tracked_satellites_n_;
+  msg.solution_satellites_n = frame.solution_satellites_n_;
+  msg.baseline_length = frame.baseline_length_;
+
+  msg.extended_solution_status.rtk_assist_active = frame.extended_solution_status_.rtk_assist_active_;
+  msg.extended_solution_status.iono_correction = frame.extended_solution_status_.iono_correction_;
+  msg.extended_solution_status.rtk_solution_verified = frame.extended_solution_status_.rtk_solution_verified_;
+  msg.extended_solution_status.antenna_status = frame.extended_solution_status_.antenna_status_;
 
   return msg;
 }

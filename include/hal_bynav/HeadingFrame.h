@@ -5,6 +5,7 @@
 #pragma once
 
 #include <hal_bynav/BynavFrame.h>
+#include <agribot_common/CommonFunctions/common_functions.h>
 
 #include <string>
 #include <vector>
@@ -17,6 +18,9 @@ struct HeadingFrame : public BynavFrame
   HeadingFrame(HeadingFrame&& other) = default;
   HeadingFrame& operator=(const HeadingFrame& other) = default;
   HeadingFrame& operator=(HeadingFrame&& other) = default;
+
+  static float bynavHeadingToRep103(float bynav_heading);
+  static float bynavPitchToRep103(float bynav_pitch);
 
   void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
              const IParsingStrategy& strategy) override;
