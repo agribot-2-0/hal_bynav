@@ -5,38 +5,77 @@
 #include <hal_bynav/BynavParser.h>
 
 BynavParser::BynavParser(std::unique_ptr<IParsingStrategy> strategy, std::unique_ptr<IFrameFactory> factory)
-  : IParser(std::move(strategy), std::move(factory))
+  : parsing_strategy_(std::move(strategy)), frame_factory_(std::move(factory))
 {
 }
 
-uint32_t BynavParser::getCrcFromFrame(std::vector<uint8_t>::iterator begin_it)
+void BynavParser::getFrameBuffersFromPacketBuffer(Buffer& packet_buffer)
 {
-  // TODO(olek)
-  static_cast<void>(begin_it);
-  return 0;
+  auto it = packet_buffer.buffer_.begin();
+  auto previous_it = packet_buffer.buffer_.begin();
+
+  while (it != packet_buffer.buffer_.end())
+  {
+    it = std::search(it, packet_buffer.buffer_.end(), std::begin(sync_bytes_), std::end(sync_bytes_));
+
+    if (it != packet_buffer.buffer_.end())
+    {
+      if (std::distance(previous_it, it) > 0)
+      {
+        // TODO(olek) - maybe use make_move_iterator (https://en.cppreference.com/w/cpp/iterator/make_move_iterator)
+        frame_buffers_.emplace(previous_it, it);
+      }
+      it += std::size(sync_bytes_);
+      previous_it = it;
+    }
+    else
+    {
+      // Handles last frame if packet doesn't end with sync bytes
+      if (previous_it != packet_buffer.buffer_.end())
+      {
+        frame_buffers_.emplace(previous_it, it);
+      }
+    }
+  }
+  packet_buffer.buffer_.clear();
 }
 
-uint32_t BynavParser::calculateCrc(std::vector<uint8_t>::iterator begin_it)
+bool BynavParser::haveFrameBufferToParse()
 {
-  // TODO(olek)
-  static_cast<void>(begin_it);
-  return 0;
+  return (frame_buffers_.size() > 0);
 }
 
-bool BynavParser::checkCrc(std::vector<uint8_t>::iterator begin_it)
+void BynavParser::parseFrameBuffer()
 {
-  return (getCrcFromFrame(begin_it) == calculateCrc(begin_it));
+  auto& frame_buffer = frame_buffers_.front();
+  auto id = getId(frame_buffer);
+
+  auto frame = frame_factory_->createFrame(id);
+  frame->parse(frame_buffer.buffer_.begin(), frame_buffer.buffer_.end(), *parsing_strategy_);
+  callCallbacks(id, *frame);
+
+  frame_buffers_.pop();
 }
 
-uint64_t BynavParser::getId(std::vector<uint8_t>::iterator begin_it)
+void BynavParser::registerCallback(uint64_t id, const Callback& callback)
 {
-  return static_cast<uint64_t>(parsing_strategy_->getUint8(begin_it + 1));
+  callback_map_[id].push_back(callback);
 }
 
-std::vector<std::pair<std::vector<uint8_t>::iterator, std::vector<uint8_t>::iterator>>
-BynavParser::split(Buffer& buffer)
+void BynavParser::callCallbacks(uint64_t id, IFrame& frame)
 {
-  // TODO(olek)
-  static_cast<void>(buffer);
-  return std::vector<std::pair<std::vector<uint8_t>::iterator, std::vector<uint8_t>::iterator>>{};
+  for (const auto& cb : callback_map_[id])
+  {
+    cb(frame);
+  }
+}
+
+uint64_t BynavParser::getId(const Buffer& frame_buffer)
+{
+  return static_cast<uint64_t>(parsing_strategy_->getUint16(std::next(frame_buffer.buffer_.begin(), id_index_)));
+}
+
+std::queue<Buffer> BynavParser::getFrameBuffersQueue()
+{
+  return frame_buffers_;
 }

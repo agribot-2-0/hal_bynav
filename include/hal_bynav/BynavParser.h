@@ -6,23 +6,38 @@
 
 #include <agribot_common/connection/IParser.h>
 
+#include <algorithm>
+#include <queue>
+
 class BynavParser : public IParser
 {
-private:
-  uint32_t getCrcFromFrame(std::vector<uint8_t>::iterator begin_it);
-  uint32_t calculateCrc(std::vector<uint8_t>::iterator begin_it);
+  using CallbackMap = std::unordered_map<uint64_t, std::vector<Callback>>;
 
 public:
-  BynavParser() = delete;
   BynavParser(std::unique_ptr<IParsingStrategy> strategy, std::unique_ptr<IFrameFactory> factory);
+  BynavParser() = delete;
   ~BynavParser() = default;
   BynavParser(const BynavParser& other) = default;
   BynavParser(BynavParser&& other) = default;
   BynavParser& operator=(const BynavParser& other) = default;
   BynavParser& operator=(BynavParser&& other) = default;
 
-  bool checkCrc(std::vector<uint8_t>::iterator begin_it) override;
-  uint64_t getId(std::vector<uint8_t>::iterator begin_it) override;
-  std::vector<std::pair<std::vector<uint8_t>::iterator, std::vector<uint8_t>::iterator>>
-  split(Buffer& buffer) override;  // NOLINT(runtime/references)
+  void getFrameBuffersFromPacketBuffer(Buffer& packet_buffer) override;
+  bool haveFrameBufferToParse() override;
+  void parseFrameBuffer() override;
+  void registerCallback(uint64_t id, const Callback& callback) override;
+  std::queue<Buffer> getFrameBuffersQueue();
+
+  static constexpr uint8_t sync_bytes_[3] = { 0xAA, 0x44, 0x12 };
+
+private:
+  std::unique_ptr<IParsingStrategy> parsing_strategy_;
+  std::unique_ptr<IFrameFactory> frame_factory_;
+  CallbackMap callback_map_;
+  std::queue<Buffer> frame_buffers_;
+
+  static constexpr uint8_t id_index_ = { 1 };
+
+  void callCallbacks(uint64_t id, IFrame& frame);  // NOLINT(runtime/references)
+  uint64_t getId(const Buffer&);
 };
