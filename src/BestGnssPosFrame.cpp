@@ -15,7 +15,7 @@ void BestGnssPosFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vecto
   {
     // Shouldn't happen as frame creation is controlled with BynavFrameFactory, but double-check just in case
     // TODO(olek) - use custom exception?
-    throw std::runtime_error("ID missmatch");
+    throw std::runtime_error("[BestGnssPosFrame] ID missmatch");
   }
 
   // Get iterator to the main part of the frame (after the header)
@@ -29,7 +29,7 @@ void BestGnssPosFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vecto
 
   if (crc_in_frame_ != calculateCrc(begin_it, end_without_crc_it, strategy))
   {
-    throw std::runtime_error("CRC missmatch");
+    throw std::runtime_error("[BestGnssPosFrame] CRC missmatch");
   }
 
   // Parse main data

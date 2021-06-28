@@ -6,6 +6,7 @@
   <arg name="ip_address"            default="192.168.0.102" />
   <arg name="port"                  default="1111" />
   <arg name="publish_extended_data" default="true" />
+  <arg name="print_debug_info"      default="true" />
 
   <arg name="gnss_topic" default="/agribot/gnss/bynav"/>
   <arg name="heading_topic" default="/agribot/heading/bynav"/>
@@ -17,6 +18,7 @@
     <param name="ip_address" value="$(arg ip_address)" />
     <param name="port" value="$(arg port)" />
     <param name="publish_extended_data" value="$(arg publish_extended_data)" />
+    <param name="print_debug_info" value="$(arg print_debug_info)" />
 
     <remap from="~gnss" to="$(arg gnss_topic)"/>
     <remap from="~heading" to="$(arg heading_topic)"/>

@@ -50,7 +50,7 @@ TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheEnd)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
 
@@ -74,7 +74,9 @@ TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheBeginning)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+
+  // Don't preallocate buffer size - allows to use packet_buffer.read_length_ = packet_buffer.buffer_.size();
+  Buffer packet_buffer{ 0 };
 
   std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
 
@@ -98,7 +100,7 @@ TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheBeginningAndAtTheEnd)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
 
@@ -124,7 +126,7 @@ TEST(BynavParserTest, SplitsPacketBufferWithoutSyncBytes)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
 
@@ -146,7 +148,7 @@ TEST(BynavParserTest, SplitsPacketBufferOnlyWithSyncBytes)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
                                std::end(BynavParser::sync_bytes_));
@@ -166,7 +168,7 @@ TEST(BynavParserTest, SplitsPacketBufferOnlyWithMultipleSyncBytes)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
                                std::end(BynavParser::sync_bytes_));
@@ -188,7 +190,7 @@ TEST(BynavParserTest, SplitsEmptyPacketBuffer)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   // Perform operations
   parser.getFrameBuffersFromPacketBuffer(packet_buffer);
@@ -204,7 +206,7 @@ TEST(BynavParserTest, SplitsPacketBufferWithMultipleFramesAndSyncBytes)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
   std::vector<uint8_t> second_frame = { 0x32, 0x11, 0xBB };
@@ -251,7 +253,7 @@ TEST(BynavParserTest, InputBufferIsCleared)
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 1024 };
+  Buffer packet_buffer{ 0 };
 
   std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
 
@@ -266,7 +268,7 @@ TEST(BynavParserTest, InputBufferIsCleared)
   parser.getFrameBuffersFromPacketBuffer(packet_buffer);
 
   // Assert
-  ASSERT_EQ(packet_buffer.buffer_.size(), static_cast<std::size_t>(0));
+  ASSERT_EQ(packet_buffer.getReadLength(), static_cast<std::size_t>(0));
 }
 
 TEST(BynavFrameTest, CalculateCrcFromBuffer)

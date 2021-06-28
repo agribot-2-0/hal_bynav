@@ -47,6 +47,7 @@ public:
   explicit HalBynavNode(ros::NodeHandle* nh, std::unique_ptr<IParser> parser, std::unique_ptr<ISocket> socket,
                         std::unique_ptr<Buffer> buffer);
   void run() const;
+  void connectSocket() const;
 
   void publishNavSatFix(const IFrame& i_frame) const;
   void publishGnssExtended(const IFrame& i_frame) const;

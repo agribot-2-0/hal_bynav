@@ -10,7 +10,7 @@ HalBynavNode::HalBynavNode(ros::NodeHandle* nh, std::unique_ptr<IParser> parser,
 {
   frame_id_ = ros_common_functions::getRosParam<std::string>("~frame_id");
   publish_extended_data_ = ros_common_functions::getRosParam<bool>("~publish_extended_data");
-  print_debug_info_ = ros_common_functions::getRosParam<bool>("~print_debug_info_");
+  print_debug_info_ = ros_common_functions::getRosParam<bool>("~print_debug_info");
 
   nav_sat_fix_publisher_ = nh_->advertise<sensor_msgs::NavSatFix>("gnss", 1);
   heading_publisher_ = nh_->advertise<sensor_msgs::Imu>("heading", 1);
@@ -240,19 +240,65 @@ HalBynavNode::bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame)
   return msg;
 }
 
+void HalBynavNode::connectSocket() const
+{
+  bool connected = false;
+
+  try
+  {
+    socket_->open();
+    socket_->connect();
+    connected = true;
+  }
+  catch (const std::exception& e)
+  {
+    ROS_WARN_STREAM("[HalBynavNode]" << e.what() << ". Retrying...");
+    ros::Duration(1.0).sleep();
+  }
+
+  while (!connected)
+  {
+    try
+    {
+      socket_->reconnect();
+      connected = true;
+    }
+    catch (const std::exception& e)
+    {
+      ROS_WARN_STREAM("[HalBynavNode]" << e.what() << ". Retrying...");
+      ros::Duration(1.0).sleep();
+    }
+  }
+  ROS_WARN_STREAM("[HalBynavNode] Socket connected!");
+}
+
 void HalBynavNode::run() const
 {
+  connectSocket();
+
   while (ros::ok())
   {
-    // TODO(olek) - add exception handling
+    try
+    {
+      socket_->read(*buffer_);
+    }
+    catch (const std::exception& e)
+    {
+      ROS_ERROR_STREAM(e.what());
+    }
 
-    socket_->read(*buffer_);
     parser_->getFrameBuffersFromPacketBuffer(*buffer_);
 
     while (parser_->haveFrameBufferToParse())
     {
-      // TODO(olek) - add exception handling for parse frame
-      parser_->parseFrameBuffer();
+      try
+      {
+        parser_->parseFrameBuffer();
+      }
+      catch (const std::exception& e)
+      {
+        ROS_ERROR_STREAM("[HalBynavNode]" << e.what());
+      }
     }
 
     ros::spinOnce();
