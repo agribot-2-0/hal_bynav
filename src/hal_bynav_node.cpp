@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   constexpr int BUFFER_SIZE = 1024;
   auto ip_address = ros_common_functions::getRosParam<std::string>("~ip_address");
   uint16_t port = ros_common_functions::getRosParam<int>("~port");
-  uint16_t timeout_ms = 200;
+  uint16_t timeout_ms = 500;
 
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
   std::unique_ptr<IFrameFactory> frame_Factory = std::make_unique<BynavFrameFactory>();
