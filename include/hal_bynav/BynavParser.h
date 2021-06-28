@@ -39,7 +39,7 @@ private:
   CallbackMap callback_map_;
   std::queue<Buffer> frame_buffers_;
 
-  static constexpr uint8_t id_index_ = { 1 };
+  static constexpr uint8_t id_index_ = { 4 };
 
   void callCallbacks(uint64_t id, IFrame& frame);  // NOLINT(runtime/references)
   uint64_t getId(const Buffer&);
