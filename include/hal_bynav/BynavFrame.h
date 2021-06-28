@@ -111,7 +111,6 @@ struct BynavFrame : public IFrame
   uint64_t calculateCrcForUint64(uint64_t value);
 
   static constexpr uint8_t CRC_LENGTH = { 4 };
-  static constexpr uint8_t SYNC_BYTES_LENGTH = { 3 };
   static constexpr std::uint64_t CRC32_POLYNOMIAL = 0xEDB88320;
 
   // Housekeeping (header) data

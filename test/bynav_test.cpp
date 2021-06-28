@@ -44,31 +44,7 @@ TEST(BynavFrameFactoryTest, ThrowsInvalidArgumentExceptionForUnsuportedId)
   }
 }
 
-TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheEnd)
-{
-  // Prepare data
-  std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
-  std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
-  BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 0 };
-
-  std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
-
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.read_length_ = packet_buffer.buffer_.size();
-
-  // Perform operations
-  parser.getFrameBuffersFromPacketBuffer(packet_buffer);
-
-  // Assert
-  auto queue = parser.getFrameBuffersQueue();
-  ASSERT_EQ(queue.size(), static_cast<std::size_t>(1));
-  ASSERT_TRUE(queue.front().buffer_ == first_frame);
-}
-
-TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheBeginning)
+TEST(BynavParserTest, SplitsFrameBufferWithSyncBytesAtTheBeginning)
 {
   // Prepare data
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
@@ -78,10 +54,10 @@ TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheBeginning)
   // Don't preallocate buffer size - allows to use packet_buffer.read_length_ = packet_buffer.buffer_.size();
   Buffer packet_buffer{ 0 };
 
-  std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
+  std::vector<uint8_t> first_frame = {
+    BynavParser::sync_bytes_[0], BynavParser::sync_bytes_[1], BynavParser::sync_bytes_[2], 0x18, 0x65, 0x78, 0xAF, 0xFF
+  };
 
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
   packet_buffer.read_length_ = packet_buffer.buffer_.size();
 
@@ -94,33 +70,7 @@ TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheBeginning)
   ASSERT_TRUE(queue.front().buffer_ == first_frame);
 }
 
-TEST(BynavParserTest, SplitsPacketBufferWithSyncBytesAtTheBeginningAndAtTheEnd)
-{
-  // Prepare data
-  std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
-  std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
-  BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
-  Buffer packet_buffer{ 0 };
-
-  std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
-
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.read_length_ = packet_buffer.buffer_.size();
-
-  // Perform operations
-  parser.getFrameBuffersFromPacketBuffer(packet_buffer);
-
-  // Assert
-  auto queue = parser.getFrameBuffersQueue();
-  ASSERT_EQ(queue.size(), static_cast<std::size_t>(1));
-  ASSERT_TRUE(queue.front().buffer_ == first_frame);
-}
-
-TEST(BynavParserTest, SplitsPacketBufferWithoutSyncBytes)
+TEST(BynavParserTest, IgnoresPacketBufferWithoutSyncBytes)
 {
   // Prepare data
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
@@ -138,8 +88,42 @@ TEST(BynavParserTest, SplitsPacketBufferWithoutSyncBytes)
 
   // Assert
   auto queue = parser.getFrameBuffersQueue();
+  ASSERT_EQ(queue.size(), static_cast<std::size_t>(0));
+}
+
+TEST(BynavParserTest, IgnoresFrameBufferBeforeFirstSyncBytes)
+{
+  // Prepare data
+  std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
+  std::unique_ptr<IFrameFactory> frame_factory = std::make_unique<BynavFrameFactory>();
+  BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
+  Buffer packet_buffer{ 0 };
+
+  std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
+  std::vector<uint8_t> second_frame = { BynavParser::sync_bytes_[0],
+                                        BynavParser::sync_bytes_[1],
+                                        BynavParser::sync_bytes_[2],
+                                        0x54,
+                                        0x97,
+                                        0xCD,
+                                        0x2A,
+                                        0x00,
+                                        0x21,
+                                        0x37,
+                                        0xAA,
+                                        0x44 };
+
+  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
+  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), second_frame.begin(), second_frame.end());
+  packet_buffer.read_length_ = packet_buffer.buffer_.size();
+
+  // Perform operations
+  parser.getFrameBuffersFromPacketBuffer(packet_buffer);
+
+  // Assert
+  auto queue = parser.getFrameBuffersQueue();
   ASSERT_EQ(queue.size(), static_cast<std::size_t>(1));
-  ASSERT_TRUE(queue.front().buffer_ == first_frame);
+  ASSERT_TRUE(queue.front().buffer_ == second_frame);
 }
 
 TEST(BynavParserTest, SplitsPacketBufferOnlyWithSyncBytes)
@@ -150,8 +134,10 @@ TEST(BynavParserTest, SplitsPacketBufferOnlyWithSyncBytes)
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
   Buffer packet_buffer{ 0 };
 
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
+  std::vector<uint8_t> first_frame = { BynavParser::sync_bytes_[0], BynavParser::sync_bytes_[1],
+                                       BynavParser::sync_bytes_[2] };
+
+  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
   packet_buffer.read_length_ = packet_buffer.buffer_.size();
 
   // Perform operations
@@ -159,7 +145,8 @@ TEST(BynavParserTest, SplitsPacketBufferOnlyWithSyncBytes)
 
   // Assert
   auto queue = parser.getFrameBuffersQueue();
-  ASSERT_EQ(queue.size(), static_cast<std::size_t>(0));
+  ASSERT_EQ(queue.size(), static_cast<std::size_t>(1));
+  ASSERT_TRUE(queue.front().buffer_ == first_frame);
 }
 
 TEST(BynavParserTest, SplitsPacketBufferOnlyWithMultipleSyncBytes)
@@ -170,10 +157,12 @@ TEST(BynavParserTest, SplitsPacketBufferOnlyWithMultipleSyncBytes)
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
   Buffer packet_buffer{ 0 };
 
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
+  std::vector<uint8_t> first_frame = { BynavParser::sync_bytes_[0], BynavParser::sync_bytes_[1],
+                                       BynavParser::sync_bytes_[2] };
+
+  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
+  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
+  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
   packet_buffer.read_length_ = packet_buffer.buffer_.size();
 
   // Perform operations
@@ -181,7 +170,12 @@ TEST(BynavParserTest, SplitsPacketBufferOnlyWithMultipleSyncBytes)
 
   // Assert
   auto queue = parser.getFrameBuffersQueue();
-  ASSERT_EQ(queue.size(), static_cast<std::size_t>(0));
+  ASSERT_EQ(queue.size(), static_cast<std::size_t>(3));
+  ASSERT_TRUE(queue.front().buffer_ == first_frame);
+  queue.pop();
+  ASSERT_TRUE(queue.front().buffer_ == first_frame);
+  queue.pop();
+  ASSERT_TRUE(queue.front().buffer_ == first_frame);
 }
 
 TEST(BynavParserTest, SplitsEmptyPacketBuffer)
@@ -200,7 +194,7 @@ TEST(BynavParserTest, SplitsEmptyPacketBuffer)
   ASSERT_EQ(queue.size(), static_cast<std::size_t>(0));
 }
 
-TEST(BynavParserTest, SplitsPacketBufferWithMultipleFramesAndSyncBytes)
+TEST(BynavParserTest, SplitsPacketBufferWithMultipleFrames)
 {
   // Prepare data
   std::unique_ptr<IParsingStrategy> parsing_strategy = std::make_unique<LsbFirstParsingStrategy>();
@@ -208,31 +202,30 @@ TEST(BynavParserTest, SplitsPacketBufferWithMultipleFramesAndSyncBytes)
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
   Buffer packet_buffer{ 0 };
 
-  std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
-  std::vector<uint8_t> second_frame = { 0x32, 0x11, 0xBB };
-  std::vector<uint8_t> third_frame = { 0x54, 0x97, 0xCD, 0x2A, 0x00, 0x21, 0x37, 0xAA, 0x44 };
+  std::vector<uint8_t> first_frame = {
+    BynavParser::sync_bytes_[0], BynavParser::sync_bytes_[1], BynavParser::sync_bytes_[2], 0x18, 0x65, 0x78, 0xAF, 0xFF
+  };
+  std::vector<uint8_t> second_frame = {
+    BynavParser::sync_bytes_[0], BynavParser::sync_bytes_[1], BynavParser::sync_bytes_[2], 0x32, 0x11, 0xBB
+  };
+  std::vector<uint8_t> third_frame = { BynavParser::sync_bytes_[0],
+                                       BynavParser::sync_bytes_[1],
+                                       BynavParser::sync_bytes_[2],
+                                       0x54,
+                                       0x97,
+                                       0xCD,
+                                       0x2A,
+                                       0x00,
+                                       0x21,
+                                       0x37,
+                                       0xAA,
+                                       0x44 };
 
   // [SYNC][SYNC][SYNC][FIRST][SYNC][SYNC][SECOND][SYNC][THIRD][SYNC][SYNC]
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), second_frame.begin(), second_frame.end());
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), third_frame.begin(), third_frame.end());
   packet_buffer.read_length_ = packet_buffer.buffer_.size();
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
 
   // Perform operations
   parser.getFrameBuffersFromPacketBuffer(packet_buffer);
@@ -255,14 +248,14 @@ TEST(BynavParserTest, InputBufferIsCleared)
   BynavParser parser{ std::move(parsing_strategy), std::move(frame_factory) };
   Buffer packet_buffer{ 0 };
 
-  std::vector<uint8_t> first_frame = { 0x18, 0x65, 0x78, 0xAF, 0xFF };
+  std::vector<uint8_t> first_frame = {
+    BynavParser::sync_bytes_[0], BynavParser::sync_bytes_[1], BynavParser::sync_bytes_[2], 0x18, 0x65, 0x78, 0xAF, 0xFF
+  };
 
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
   packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), first_frame.begin(), first_frame.end());
-  packet_buffer.buffer_.insert(packet_buffer.buffer_.end(), std::begin(BynavParser::sync_bytes_),
-                               std::end(BynavParser::sync_bytes_));
   packet_buffer.read_length_ = packet_buffer.buffer_.size();
+
+  ASSERT_EQ(packet_buffer.getReadLength(), packet_buffer.buffer_.size());
 
   // Perform operations
   parser.getFrameBuffersFromPacketBuffer(packet_buffer);

@@ -15,7 +15,9 @@ void BynavParser::getFrameBuffersFromPacketBuffer(Buffer& packet_buffer)
   {
     auto read_end_it = std::next(packet_buffer.buffer_.begin(), packet_buffer.getReadLength());
     auto it = packet_buffer.buffer_.begin();
-    auto previous_it = packet_buffer.buffer_.begin();
+    auto previous_it = std::search(it, read_end_it, std::begin(sync_bytes_), std::end(sync_bytes_));
+
+    // Set previous_it on the first sync_bytes in the packet to handle packets not starting with sync bytes
 
     while (it != read_end_it)
     {
@@ -28,12 +30,12 @@ void BynavParser::getFrameBuffersFromPacketBuffer(Buffer& packet_buffer)
           // TODO(olek) - maybe use make_move_iterator (https://en.cppreference.com/w/cpp/iterator/make_move_iterator)
           frame_buffers_.emplace(previous_it, it);
         }
-        it += std::size(sync_bytes_);
         previous_it = it;
+        ++it;
       }
       else
       {
-        // Handles last frame if packet doesn't end with sync bytes
+        // Handles last frame (because packet doesn't end with sync bytes)
         if (previous_it != read_end_it)
         {
           frame_buffers_.emplace(previous_it, it);
