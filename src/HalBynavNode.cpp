@@ -149,6 +149,7 @@ sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const Best
     {
       case PositionStatus::WideInt:
       case PositionStatus::NarrowInt:
+      case PositionStatus::Psrdiff:
         msg.status.status = msg.status.STATUS_GBAS_FIX;
         break;
 
@@ -156,9 +157,13 @@ sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const Best
         msg.status.status = msg.status.STATUS_FIX;
         break;
 
+      case PositionStatus::None:
+        msg.status.status = msg.status.STATUS_NO_FIX;
+        break;
+
       default:
         ROS_WARN_STREAM("[HalBynavNode][BestGnssPosFrame] position_status_ = "
-                        << static_cast<int>(frame.solution_status_)
+                        << static_cast<int>(frame.position_status_)
                         << " is not recognized. Defaulting to STATUS_NO_FIX");
         msg.status.status = msg.status.STATUS_NO_FIX;
         break;
