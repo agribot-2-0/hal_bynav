@@ -31,7 +31,7 @@ void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<ui
   if (crc_in_frame_ != crc_calculated)
   {
     throw std::runtime_error("[HeadingFrame] CRC missmatch. crc_in_frame_ = " + std::to_string(crc_in_frame_) +
-                             "and crc_calculated = " + std::to_string(crc_calculated));
+                             " and crc_calculated = " + std::to_string(crc_calculated));
   }
 
   // Parse main data
