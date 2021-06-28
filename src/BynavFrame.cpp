@@ -9,11 +9,11 @@ void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint
 {
   // TODO(olek)
   // Parse housekeeping data
-  header_length_ = strategy.getUint8(std::next(begin_it, 0));
-  message_id_ = strategy.getUint16(std::next(begin_it, 1));
-  message_length_ = strategy.getUint16(std::next(begin_it, 5));
-  gnss_week_ = strategy.getUint16(std::next(begin_it, 11));
-  gnss_milliseconds_ = strategy.getUint32(std::next(begin_it, 13));
+  header_length_ = strategy.getUint8(std::next(begin_it, 3));
+  message_id_ = strategy.getUint16(std::next(begin_it, 4));
+  message_length_ = strategy.getUint16(std::next(begin_it, 8));
+  gnss_week_ = strategy.getUint16(std::next(begin_it, 14));
+  gnss_milliseconds_ = strategy.getUint32(std::next(begin_it, 16));
 
   // Check length validity
   if (auto expected_length = std::distance(begin_it, end_it);
