@@ -6,7 +6,7 @@
   <arg name="ip_address"            default="192.168.0.102" />
   <arg name="port"                  default="1111" />
   <arg name="publish_extended_data" default="true" />
-  <arg name="print_debug_info"      default="true" />
+  <arg name="print_debug_info"      default="false" />
 
   <arg name="gnss_topic" default="/agribot/gnss/bynav"/>
   <arg name="heading_topic" default="/agribot/heading/bynav"/>
