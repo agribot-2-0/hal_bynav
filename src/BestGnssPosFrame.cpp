@@ -26,10 +26,12 @@ void BestGnssPosFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vecto
 
   // Check CRC
   crc_in_frame_ = strategy.getUint32(std::next(main_data_begin_it, 72));
+  auto crc_calculated = calculateCrc(begin_it, end_without_crc_it, strategy);
 
   if (crc_in_frame_ != calculateCrc(begin_it, end_without_crc_it, strategy))
   {
-    throw std::runtime_error("[BestGnssPosFrame] CRC missmatch");
+    throw std::runtime_error("[HeadingFrame] CRC missmatch. crc_in_frame_ = " + std::to_string(crc_in_frame_) +
+                             "and crc_calculated = " + std::to_string(crc_calculated));
   }
 
   // Parse main data
