@@ -54,7 +54,7 @@ void HalBynavNode::publishGnssExtended(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const BestGnssPosFrame*>(&iframe);
   auto msg = bynavGnssExtendedMsgFromBestGnssPosFrame(*frame);
-  nav_sat_fix_publisher_.publish(msg);
+  gnss_extended_publisher_.publish(msg);
 }
 
 void HalBynavNode::publishImu(const IFrame& iframe) const
@@ -75,7 +75,7 @@ void HalBynavNode::publishHeadingExtended(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
   auto msg = bynavHeadingExtendedMsgFromHeadingFrame(*frame);
-  nav_sat_fix_publisher_.publish(msg);
+  heading_extended_publisher_.publish(msg);
 }
 
 void HalBynavNode::printBestGnssPosFrame(const IFrame& iframe) const
