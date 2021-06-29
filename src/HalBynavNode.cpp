@@ -150,6 +150,7 @@ sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const Best
       case PositionStatus::WideInt:
       case PositionStatus::NarrowInt:
       case PositionStatus::Psrdiff:
+      case PositionStatus::NarrowFloat:
         msg.status.status = msg.status.STATUS_GBAS_FIX;
         break;
 
