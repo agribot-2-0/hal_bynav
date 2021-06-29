@@ -7,7 +7,14 @@
 void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
                        const IParsingStrategy& strategy)
 {
-  // TODO(olek)
+  auto frame_length = std::distance(begin_it, end_it);
+
+  // TODO(olek) - remove magic numbers
+  if (frame_length <= 9)
+  {
+    throw std::runtime_error("Frame length too short to decode message_length_");
+  }
+
   // Parse housekeeping data
   header_length_ = strategy.getUint8(std::next(begin_it, 3));
   message_id_ = strategy.getUint16(std::next(begin_it, 4));
@@ -16,10 +23,8 @@ void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint
   gnss_milliseconds_ = strategy.getUint32(std::next(begin_it, 16));
 
   // Check length validity
-  if (auto expected_length = std::distance(begin_it, end_it);
-      expected_length != (header_length_ + message_length_ + CRC_LENGTH))  // TODO(olek) - Maybe minus SYNC_BYTES_LENGTH
+  if (frame_length != (header_length_ + message_length_ + CRC_LENGTH))
   {
-    // TODO(olek) - use custom exception?
     throw std::runtime_error("Frame length missmatch");
   }
 }

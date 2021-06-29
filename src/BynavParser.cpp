@@ -27,7 +27,6 @@ void BynavParser::getFrameBuffersFromPacketBuffer(Buffer& packet_buffer)
       {
         if (std::distance(previous_it, it) > 0)
         {
-          // TODO(olek) - maybe use make_move_iterator (https://en.cppreference.com/w/cpp/iterator/make_move_iterator)
           frame_buffers_.emplace(previous_it, it);
         }
         previous_it = it;
@@ -54,10 +53,10 @@ bool BynavParser::haveFrameBufferToParse() const
 void BynavParser::parseFrameBuffer()
 {
   auto& frame_buffer = frame_buffers_.front();
-  auto id = getId(frame_buffer);
 
   try
   {
+    auto id = getId(frame_buffer);
     auto frame = frame_factory_->createFrame(id);
     frame->parse(frame_buffer.buffer_.begin(), frame_buffer.buffer_.end(), *parsing_strategy_);
     callCallbacks(id, *frame);
@@ -85,6 +84,12 @@ void BynavParser::callCallbacks(uint64_t id, IFrame& frame)
 
 uint64_t BynavParser::getId(const Buffer& frame_buffer)
 {
+  // Check if frame is long enough to parse both bytes of ID
+  if ((id_index_ + 1) >= frame_buffer.getReadLength())
+  {
+    throw std::runtime_error("Frame read_length_ too short to decode ID");
+  }
+
   return static_cast<uint64_t>(parsing_strategy_->getUint16(std::next(frame_buffer.buffer_.begin(), id_index_)));
 }
 
