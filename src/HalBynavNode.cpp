@@ -261,6 +261,18 @@ void HalBynavNode::connectSocket() const
     ros::Duration(1.0).sleep();
   }
 
+  if (!connected)
+  {
+    reconnectSocket();
+  }
+
+  ROS_WARN_STREAM("[HalBynavNode] Socket connected!");
+}
+
+void HalBynavNode::reconnectSocket() const
+{
+  bool connected = false;
+
   while (!connected)
   {
     try
@@ -274,10 +286,10 @@ void HalBynavNode::connectSocket() const
       ros::Duration(1.0).sleep();
     }
   }
-  ROS_WARN_STREAM("[HalBynavNode] Socket connected!");
+  ROS_WARN_STREAM("[HalBynavNode] Socket reconnected!");
 }
 
-void HalBynavNode::run() const
+void HalBynavNode::run()
 {
   connectSocket();
 
@@ -286,10 +298,18 @@ void HalBynavNode::run() const
     try
     {
       socket_->read(*buffer_);
+      socket_read_errors_n_ = 0;
     }
     catch (const std::exception& e)
     {
       ROS_ERROR_STREAM(e.what());
+      socket_read_errors_n_++;
+
+      if (socket_read_errors_n_ >= MAX_SOCKET_READ_ERRORS_N_)
+      {
+        reconnectSocket();
+        socket_read_errors_n_ = 0;
+      }
     }
 
     parser_->getFrameBuffersFromPacketBuffer(*buffer_);

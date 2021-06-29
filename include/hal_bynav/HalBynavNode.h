@@ -37,6 +37,9 @@ private:
   bool publish_extended_data_;
   bool print_debug_info_;
   std::string frame_id_;
+  int socket_read_errors_n_;
+
+  static constexpr int MAX_SOCKET_READ_ERRORS_N_ = { 5 };
 
   sensor_msgs::NavSatFix navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const;
   agribot_msgs::BynavGnssExtended bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const;
@@ -46,8 +49,9 @@ private:
 public:
   explicit HalBynavNode(ros::NodeHandle* nh, std::unique_ptr<IParser> parser, std::unique_ptr<ISocket> socket,
                         std::unique_ptr<Buffer> buffer);
-  void run() const;
+  void run();
   void connectSocket() const;
+  void reconnectSocket() const;
 
   void publishNavSatFix(const IFrame& i_frame) const;
   void publishGnssExtended(const IFrame& i_frame) const;
