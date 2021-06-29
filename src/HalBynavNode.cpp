@@ -258,7 +258,7 @@ void HalBynavNode::connectSocket() const
   }
   catch (const std::exception& e)
   {
-    ROS_WARN_STREAM("[HalBynavNode]" << e.what() << ". Retrying...");
+    ROS_WARN_STREAM("[HalBynavNode] " << e.what() << ". Retrying...");
     ros::Duration(1.0).sleep();
   }
 
@@ -283,7 +283,7 @@ void HalBynavNode::reconnectSocket() const
     }
     catch (const std::exception& e)
     {
-      ROS_WARN_STREAM("[HalBynavNode]" << e.what() << ". Retrying...");
+      ROS_WARN_STREAM("[HalBynavNode] " << e.what() << ". Retrying...");
       ros::Duration(1.0).sleep();
     }
   }
@@ -324,7 +324,7 @@ void HalBynavNode::run()
       }
       catch (const std::exception& e)
       {
-        ROS_ERROR_STREAM("[HalBynavNode]" << e.what());
+        ROS_ERROR_STREAM("[HalBynavNode] " << e.what());
       }
     }
 
