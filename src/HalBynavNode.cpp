@@ -307,6 +307,7 @@ void HalBynavNode::run()
 
       if (socket_read_errors_n_ >= MAX_SOCKET_READ_ERRORS_N_)
       {
+        ROS_ERROR_STREAM("[HalBynavNode] Socket connection lost. Trying to reconnect...");
         reconnectSocket();
         socket_read_errors_n_ = 0;
       }
