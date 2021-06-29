@@ -276,6 +276,16 @@ TEST(BynavFrameTest, CalculateCrcFromBuffer)
   ASSERT_EQ(expected_crc, frame.calculateCrc(buffer.begin(), buffer.end(), strategy));
 }
 
+TEST(HeadingFrameTest, BynavHeadingToRep103)
+{
+  // Prepare data
+  float ned_yaw_degrees = 63.78;
+  float expected_enu_yaw_radians = 0.45762533;
+
+  // Check assertion
+  ASSERT_FLOAT_EQ(expected_enu_yaw_radians, HeadingFrame::bynavHeadingToRep103(ned_yaw_degrees));
+}
+
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
