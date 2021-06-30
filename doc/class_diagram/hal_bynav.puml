@@ -89,19 +89,19 @@ namespace hal_bynav {
 
   class BynavFrame
   {
-    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strateg) : void
-    + calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strateg) : uint32_t
+    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : void
+    + calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : uint32_t
     + calculateCrcForUint64(uint64_t value) : uint64_t
   }
 
   class BestGnssPosFrame
   {
-    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strateg) : void
+    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : void
   }
 
   class HeadingFrame
   {
-    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strateg) : void
+    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : void
   }
 
   ' Inheritance
