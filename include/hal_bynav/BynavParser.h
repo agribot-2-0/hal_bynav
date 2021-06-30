@@ -5,6 +5,7 @@
 #pragma once
 
 #include <agribot_common/connection/IParser.h>
+#include <hal_bynav/BynavFrame.h>
 
 #include <algorithm>
 #include <memory>
@@ -38,8 +39,6 @@ private:
   std::unique_ptr<IFrameFactory> frame_factory_;
   CallbackMap callback_map_;
   std::queue<Buffer> frame_buffers_;
-
-  static constexpr uint8_t id_index_ = { 4 };
 
   void callCallbacks(uint64_t id, IFrame& frame);  // NOLINT(runtime/references)
   uint64_t getId(const Buffer&);

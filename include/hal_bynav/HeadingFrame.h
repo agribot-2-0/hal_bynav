@@ -10,6 +10,31 @@
 #include <string>
 #include <vector>
 
+namespace HeadingFrameIndex
+{
+enum
+{
+  SolutionStatus = 0,
+  HeadingStatus = 4,
+  BaselineLength = 8,
+  Heading = 12,
+  Pitch = 16,
+  HeadingStd = 24,
+  PitchStd = 28,
+  StationIdBegin = 32,
+  StationIdEnd = 36,
+  TrackedSatellitesN = 36,
+  SolutionSatellitesN = 37,
+  AboveElevationSatellitesN = 38,
+  L2AboveElevationSatellitesN = 39,
+  SolutionSource = 40,
+  ExtendedSolutionStatus = 41,
+  GalileoBeidouSignalMask = 42,
+  GpsGlonassSignalMask = 43,
+  Crc = 44
+};
+}  // namespace HeadingFrameIndex
+
 struct HeadingFrame : public BynavFrame
 {
   HeadingFrame() = default;

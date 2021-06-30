@@ -95,6 +95,18 @@ struct ExtendedSolutionStatus
   ExtendedSolutionStatus& operator=(ExtendedSolutionStatus&&) = default;
 };
 
+namespace BynavFrameIndex
+{
+enum
+{
+  HeaderLength = 3,
+  MessageId = 4,
+  MessageLength = 8,
+  GnssWeek = 14,
+  GnssMilliseconds = 16
+};
+}  // namespace BynavFrameIndex
+
 struct BynavFrame : public IFrame
 {
   BynavFrame() = default;

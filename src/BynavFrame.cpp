@@ -9,18 +9,18 @@ void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint
 {
   auto frame_length = std::distance(begin_it, end_it);
 
-  // TODO(olek) - remove magic numbers
-  if (frame_length <= 9)
+  // Check if frame is long enough to parse both bytes of message length
+  if (frame_length <= (BynavFrameIndex::MessageLength + 1))
   {
     throw std::runtime_error("Frame length too short to decode message_length_");
   }
 
   // Parse housekeeping data
-  header_length_ = strategy.getUint8(std::next(begin_it, 3));
-  message_id_ = strategy.getUint16(std::next(begin_it, 4));
-  message_length_ = strategy.getUint16(std::next(begin_it, 8));
-  gnss_week_ = strategy.getUint16(std::next(begin_it, 14));
-  gnss_milliseconds_ = strategy.getUint32(std::next(begin_it, 16));
+  header_length_ = strategy.getUint8(std::next(begin_it, BynavFrameIndex::HeaderLength));
+  message_id_ = strategy.getUint16(std::next(begin_it, BynavFrameIndex::MessageId));
+  message_length_ = strategy.getUint16(std::next(begin_it, BynavFrameIndex::MessageLength));
+  gnss_week_ = strategy.getUint16(std::next(begin_it, BynavFrameIndex::GnssWeek));
+  gnss_milliseconds_ = strategy.getUint32(std::next(begin_it, BynavFrameIndex::GnssMilliseconds));
 
   // Check length validity
   if (frame_length != (header_length_ + message_length_ + CRC_LENGTH))

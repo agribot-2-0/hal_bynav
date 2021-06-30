@@ -9,6 +9,35 @@
 #include <string>
 #include <vector>
 
+namespace BestGnssPosFrameIndex
+{
+enum
+{
+  SolutionStatus = 0,
+  PositionStatus = 4,
+  Latitude = 8,
+  Longitude = 16,
+  Altitude = 24,
+  Undulation = 32,
+  DatumId = 36,
+  LatitudeStd = 40,
+  LongitudeStd = 44,
+  AltitudeStd = 48,
+  StationIdBegin = 52,
+  StationIdEnd = 56,
+  DifferentialAge = 56,
+  SolutionAge = 60,
+  TrackedSatellitesN = 64,
+  SolutionSatellitesN = 65,
+  L1SolutionSatellitesN = 66,
+  MultiSolutionSatellitesN = 67,
+  ExtendedSolutionStatus = 69,
+  GalileoBeidouSignalMask = 70,
+  GpsGlonassSignalMask = 71,
+  Crc = 72
+};
+}  // namespace BestGnssPosFrameIndex
+
 struct BestGnssPosFrame : public BynavFrame
 {
   BestGnssPosFrame() = default;

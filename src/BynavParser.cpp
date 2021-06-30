@@ -85,12 +85,13 @@ void BynavParser::callCallbacks(uint64_t id, IFrame& frame)
 uint64_t BynavParser::getId(const Buffer& frame_buffer)
 {
   // Check if frame is long enough to parse both bytes of ID
-  if ((id_index_ + 1) >= frame_buffer.getReadLength())
+  if ((BynavFrameIndex::MessageId + 1) >= frame_buffer.getReadLength())
   {
     throw std::runtime_error("Frame read_length_ too short to decode ID");
   }
 
-  return static_cast<uint64_t>(parsing_strategy_->getUint16(std::next(frame_buffer.buffer_.begin(), id_index_)));
+  return static_cast<uint64_t>(
+      parsing_strategy_->getUint16(std::next(frame_buffer.buffer_.begin(), BynavFrameIndex::MessageId)));
 }
 
 std::queue<Buffer> BynavParser::getFrameBuffersQueue()

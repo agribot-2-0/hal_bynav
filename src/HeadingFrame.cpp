@@ -14,7 +14,6 @@ void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<ui
   if (message_id_ != ID)
   {
     // Shouldn't happen as frame creation is controlled with BynavFrameFactory, but double-check just in case
-    // TODO(olek) - use custom exception?
     throw std::runtime_error("[HeadingFrame] ID missmatch");
   }
 
@@ -25,7 +24,7 @@ void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<ui
   auto end_without_crc_it = std::prev(end_it, CRC_LENGTH);
 
   // Check CRC
-  crc_in_frame_ = strategy.getUint32(std::next(main_data_begin_it, 44));
+  crc_in_frame_ = strategy.getUint32(std::next(main_data_begin_it, HeadingFrameIndex::Crc));
   auto crc_calculated = calculateCrc(begin_it, end_without_crc_it, strategy);
 
   if (crc_in_frame_ != crc_calculated)
@@ -35,22 +34,31 @@ void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<ui
   }
 
   // Parse main data
-  solution_status_ = static_cast<SolutionStatus>(strategy.getUint32(std::next(main_data_begin_it, 0)));
-  heading_status_ = static_cast<PositionStatus>(strategy.getUint32(std::next(main_data_begin_it, 4)));
-  baseline_length_ = strategy.getFloat(std::next(main_data_begin_it, 8));
-  heading_ = bynavHeadingToRep103(strategy.getFloat(std::next(main_data_begin_it, 12)));
-  pitch_ = bynavPitchToRep103(strategy.getFloat(std::next(main_data_begin_it, 16)));
-  heading_std_ = common_functions::radians(strategy.getFloat(std::next(main_data_begin_it, 24)));
-  pitch_std_ = common_functions::radians(strategy.getFloat(std::next(main_data_begin_it, 28)));
-  station_id_ = strategy.getString(std::next(main_data_begin_it, 32), std::next(main_data_begin_it, 36));
-  tracked_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, 36));
-  solution_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, 37));
-  above_elevation_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, 38));
-  l2_above_elevation_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, 39));
-  solution_source_ = static_cast<SolutionSource>(strategy.getUint8(std::next(main_data_begin_it, 40)));
-  extended_solution_status_ = ExtendedSolutionStatus(strategy.getUint8(std::next(main_data_begin_it, 41)));
-  galileo_beidou_signal_mask_ = strategy.getUint8(std::next(main_data_begin_it, 42));
-  gps_glonass_signal_mask_ = strategy.getUint8(std::next(main_data_begin_it, 43));
+  solution_status_ =
+      static_cast<SolutionStatus>(strategy.getUint32(std::next(main_data_begin_it, HeadingFrameIndex::SolutionStatus)));
+  heading_status_ =
+      static_cast<PositionStatus>(strategy.getUint32(std::next(main_data_begin_it, HeadingFrameIndex::HeadingStatus)));
+  baseline_length_ = strategy.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::BaselineLength));
+  heading_ = bynavHeadingToRep103(strategy.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::Heading)));
+  pitch_ = bynavPitchToRep103(strategy.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::Pitch)));
+  heading_std_ =
+      common_functions::radians(strategy.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::HeadingStd)));
+  pitch_std_ = common_functions::radians(strategy.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::PitchStd)));
+  station_id_ = strategy.getString(std::next(main_data_begin_it, HeadingFrameIndex::StationIdBegin),
+                                   std::next(main_data_begin_it, HeadingFrameIndex::StationIdEnd));
+  tracked_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::TrackedSatellitesN));
+  solution_satellites_n_ = strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::SolutionSatellitesN));
+  above_elevation_satellites_n_ =
+      strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::AboveElevationSatellitesN));
+  l2_above_elevation_satellites_n_ =
+      strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::L2AboveElevationSatellitesN));
+  solution_source_ =
+      static_cast<SolutionSource>(strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::SolutionSource)));
+  extended_solution_status_ = ExtendedSolutionStatus(
+      strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::ExtendedSolutionStatus)));
+  galileo_beidou_signal_mask_ =
+      strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::GalileoBeidouSignalMask));
+  gps_glonass_signal_mask_ = strategy.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::GpsGlonassSignalMask));
 }
 
 float HeadingFrame::bynavHeadingToRep103(float bynav_heading)
