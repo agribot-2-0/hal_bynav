@@ -61,14 +61,26 @@ void HalBynavNode::publishImu(const IFrame& iframe) const
 {
   auto frame = dynamic_cast<const HeadingFrame*>(&iframe);
 
-  if (frame->solution_status_ == SolutionStatus::SolComputed)
+  if (frame->solution_status_ != SolutionStatus::SolComputed)
   {
-    auto msg = imuMsgFromHeadingFrame(*frame);
-    msg.header.frame_id = frame_id_;
-    msg.header.stamp = ros::Time::now();
-
-    heading_publisher_.publish(msg);
+    ROS_WARN_STREAM("[HalBynavNode][HeadingFrame] Invalid solution_status_ = "
+                    << static_cast<int>(frame->solution_status_) << ". Skipping Imu publication...");
+    return;
   }
+
+  if (frame->heading_status_ != PositionStatus::WideInt && frame->heading_status_ != PositionStatus::NarrowInt &&
+      frame->heading_status_ != PositionStatus::Psrdiff && frame->heading_status_ != PositionStatus::NarrowFloat &&
+      frame->heading_status_ != PositionStatus::Single)
+  {
+    ROS_WARN_STREAM("[HalBynavNode][HeadingFrame] Invalid heading_status_ = "
+                    << static_cast<int>(frame->heading_status_) << ". Skipping Imu publication...");
+    return;
+  }
+
+  auto msg = imuMsgFromHeadingFrame(*frame);
+  msg.header.frame_id = frame_id_;
+  msg.header.stamp = ros::Time::now();
+  heading_publisher_.publish(msg);
 }
 
 void HalBynavNode::publishHeadingExtended(const IFrame& iframe) const
