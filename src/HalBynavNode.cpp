@@ -63,8 +63,8 @@ void HalBynavNode::publishImu(const IFrame& iframe) const
 
   if (frame->solution_status_ != SolutionStatus::SolComputed)
   {
-    ROS_WARN_STREAM("[HalBynavNode][HeadingFrame] Invalid solution_status_ = "
-                    << static_cast<int>(frame->solution_status_) << ". Skipping Imu publication...");
+    ROS_WARN_STREAM_THROTTLE(5.0, "[HalBynavNode][HeadingFrame] Invalid solution_status_ = "
+                                      << static_cast<int>(frame->solution_status_) << ". Skipping Imu publication...");
     return;
   }
 
@@ -72,8 +72,8 @@ void HalBynavNode::publishImu(const IFrame& iframe) const
       frame->heading_status_ != PositionStatus::Psrdiff && frame->heading_status_ != PositionStatus::NarrowFloat &&
       frame->heading_status_ != PositionStatus::Single)
   {
-    ROS_WARN_STREAM("[HalBynavNode][HeadingFrame] Invalid heading_status_ = "
-                    << static_cast<int>(frame->heading_status_) << ". Skipping Imu publication...");
+    ROS_WARN_STREAM_THROTTLE(5.0, "[HalBynavNode][HeadingFrame] Invalid heading_status_ = "
+                                      << static_cast<int>(frame->heading_status_) << ". Skipping Imu publication...");
     return;
   }
 
@@ -175,9 +175,9 @@ sensor_msgs::NavSatFix HalBynavNode::navSatFixMsgFromBestGnssPosFrame(const Best
         break;
 
       default:
-        ROS_WARN_STREAM("[HalBynavNode][BestGnssPosFrame] position_status_ = "
-                        << static_cast<int>(frame.position_status_)
-                        << " is not recognized. Defaulting to STATUS_NO_FIX");
+        ROS_WARN_STREAM_THROTTLE(1.0, "[HalBynavNode][BestGnssPosFrame] position_status_ = "
+                                          << static_cast<int>(frame.position_status_)
+                                          << " is not recognized. Defaulting to STATUS_NO_FIX");
         msg.status.status = msg.status.STATUS_NO_FIX;
         break;
     }
