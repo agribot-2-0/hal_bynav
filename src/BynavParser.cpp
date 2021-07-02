@@ -9,11 +9,11 @@ BynavParser::BynavParser(std::unique_ptr<IParsingStrategy> strategy, std::unique
 {
 }
 
-void BynavParser::getFrameBuffersFromPacketBuffer(Buffer& packet_buffer)
+void BynavParser::splitPacketBufferToFrameBuffers(Buffer& packet_buffer)
 {
-  if (packet_buffer.getReadLength() > 0)
+  if (packet_buffer.read_length_ > 0)
   {
-    auto read_end_it = std::next(packet_buffer.buffer_.begin(), packet_buffer.getReadLength());
+    auto read_end_it = std::next(packet_buffer.buffer_.begin(), packet_buffer.read_length_);
     auto it = packet_buffer.buffer_.begin();
     auto previous_it = std::search(it, read_end_it, std::begin(sync_bytes_), std::end(sync_bytes_));
 
@@ -58,7 +58,7 @@ void BynavParser::parseFrameBuffer()
   {
     auto id = getId(frame_buffer);
     auto frame = frame_factory_->createFrame(id);
-    frame->parse(frame_buffer.buffer_.begin(), frame_buffer.buffer_.end(), *parsing_strategy_);
+    frame->deserialize(frame_buffer.buffer_.begin(), frame_buffer.buffer_.end(), *parsing_strategy_);
     callCallbacks(id, *frame);
     frame_buffers_.pop();
   }
@@ -85,7 +85,7 @@ void BynavParser::callCallbacks(uint64_t id, IFrame& frame)
 uint64_t BynavParser::getId(const Buffer& frame_buffer)
 {
   // Check if frame is long enough to parse both bytes of ID
-  if ((BynavFrameIndex::MessageId + 1) >= frame_buffer.getReadLength())
+  if ((BynavFrameIndex::MessageId + 1) >= frame_buffer.read_length_)
   {
     throw std::runtime_error("Frame read_length_ too short to decode ID");
   }

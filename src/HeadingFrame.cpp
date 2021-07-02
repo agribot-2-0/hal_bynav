@@ -4,11 +4,11 @@
 
 #include <hal_bynav/HeadingFrame.h>
 
-void HeadingFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                         const IParsingStrategy& strategy)
+void HeadingFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+                               const IParsingStrategy& strategy)
 {
   // Parse and validate part common for all Bynav frames
-  BynavFrame::parse(begin_it, end_it, strategy);
+  BynavFrame::deserialize(begin_it, end_it, strategy);
 
   // Check id validity
   if (message_id_ != ID)

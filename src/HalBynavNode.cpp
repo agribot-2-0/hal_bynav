@@ -326,7 +326,7 @@ void HalBynavNode::run()
       }
     }
 
-    parser_->getFrameBuffersFromPacketBuffer(*buffer_);
+    parser_->splitPacketBufferToFrameBuffers(*buffer_);
 
     while (parser_->haveFrameBufferToParse())
     {

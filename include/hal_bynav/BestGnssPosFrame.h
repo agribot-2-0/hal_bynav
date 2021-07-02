@@ -47,10 +47,10 @@ struct BestGnssPosFrame : public BynavFrame
   BestGnssPosFrame& operator=(const BestGnssPosFrame& other) = default;
   BestGnssPosFrame& operator=(BestGnssPosFrame&& other) = default;
 
-  void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-             const IParsingStrategy& strategy) override;
+  void deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+                   const IParsingStrategy& strategy) override;
 
-  static constexpr uint64_t ID = { 1429 };
+  static constexpr uint64_t ID { 1429 };
 
   // Main data
   SolutionStatus solution_status_;

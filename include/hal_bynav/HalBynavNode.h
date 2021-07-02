@@ -39,7 +39,7 @@ private:
   std::string frame_id_;
   int socket_read_errors_n_;
 
-  static constexpr int MAX_SOCKET_READ_ERRORS_N_ = { 5 };
+  static constexpr int MAX_SOCKET_READ_ERRORS_N_ { 5 };
 
   sensor_msgs::NavSatFix navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const;
   agribot_msgs::BynavGnssExtended bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) const;

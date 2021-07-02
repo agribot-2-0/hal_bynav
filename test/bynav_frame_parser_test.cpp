@@ -79,7 +79,7 @@ TEST(BynavFrameParserTest, CalculateCrcForFrame)
   // Prepare data
   std::uint32_t expected_crc = 2683756513;
   constexpr std::size_t frame_length = 10;
-  std::uint8_t frame[frame_length] = { 0x14, 0x32, 0xFA, 0x92, 0xAA, 0xB5, 0x06, 0x65, 0x88, 0x39 };
+  std::uint8_t frame[frame_length]{ 0x14, 0x32, 0xFA, 0x92, 0xAA, 0xB5, 0x06, 0x65, 0x88, 0x39 };
 
   // Check assertion
   ASSERT_EQ(expected_crc, BynavFrameParser::calculateCrcForFrame(frame, frame_length));

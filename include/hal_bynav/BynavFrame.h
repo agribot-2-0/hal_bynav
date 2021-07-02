@@ -116,13 +116,15 @@ struct BynavFrame : public IFrame
   BynavFrame& operator=(const BynavFrame& other) = delete;
   BynavFrame& operator=(BynavFrame&& other) = delete;
 
-  void parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-             const IParsingStrategy& strategy) override;
+  void deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+                   const IParsingStrategy& strategy) override;
+  void serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+                 const IParsingStrategy& strategy) override;
   uint32_t calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
                         const IParsingStrategy& strategy);
   uint64_t calculateCrcForUint64(uint64_t value);
 
-  static constexpr uint8_t CRC_LENGTH = { 4 };
+  static constexpr uint8_t CRC_LENGTH{ 4 };
   static constexpr std::uint64_t CRC32_POLYNOMIAL = 0xEDB88320;
 
   // Housekeeping (header) data

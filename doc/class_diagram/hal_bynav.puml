@@ -41,7 +41,7 @@ namespace hal_bynav {
   class BynavParser
   {
 
-    + getFrameBuffersFromPacketBuffer(Buffer& packet_buffer) : void
+    + splitPacketBufferToFrameBuffers(Buffer& packet_buffer) : void
     + haveFrameBufferToParse() : bool
     + parseFrameBuffer() : void
     + registerCallback(uint64_t id, const std::function<void(IFrame&)>& callback) : void
@@ -122,6 +122,11 @@ namespace hal_bynav {
   HalBynavNode o-- Buffer
 
   BynavFrameFactory ..> IFrame
+
+  ISocket ..> Buffer
+  IParser ..> Buffer
+  IParser ..> IFrame
+  IFrameFactory ..> IFrame
 }
 
 @enduml

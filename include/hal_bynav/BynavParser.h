@@ -26,13 +26,13 @@ public:
   BynavParser& operator=(const BynavParser& other) = default;
   BynavParser& operator=(BynavParser&& other) = default;
 
-  void getFrameBuffersFromPacketBuffer(Buffer& packet_buffer) override;
+  void splitPacketBufferToFrameBuffers(Buffer& packet_buffer) override;
   bool haveFrameBufferToParse() const override;
   void parseFrameBuffer() override;
   void registerCallback(uint64_t id, const Callback& callback) override;
   std::queue<Buffer> getFrameBuffersQueue();
 
-  static constexpr uint8_t sync_bytes_[3] = { 0xAA, 0x44, 0x12 };
+  static constexpr uint8_t sync_bytes_[3]{ 0xAA, 0x44, 0x12 };
 
 private:
   std::unique_ptr<IParsingStrategy> parsing_strategy_;

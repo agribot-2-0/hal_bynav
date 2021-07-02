@@ -4,8 +4,8 @@
 
 #include <hal_bynav/BynavFrame.h>
 
-void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                       const IParsingStrategy& strategy)
+void BynavFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+                             const IParsingStrategy& strategy)
 {
   auto frame_length = std::distance(begin_it, end_it);
 
@@ -29,13 +29,21 @@ void BynavFrame::parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint
   }
 }
 
+void BynavFrame::serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
+                           const IParsingStrategy& strategy)
+{
+  // TODO(all) - implement in the future
+  static_cast<void>(begin_it);
+  static_cast<void>(end_it);
+  static_cast<void>(strategy);
+}
+
 uint32_t BynavFrame::calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
                                   const IParsingStrategy& strategy)
 {
   uint64_t crc = 0;
 
-  // for (const auto& it = begin_it; it != end_it; ++it)
-  for (auto& it = begin_it; it != end_it; ++it)
+  for (auto it = begin_it; it != end_it; ++it)
   {
     auto tmp1 = (crc >> 8) & 0x00FFFFFFL;
     auto tmp2 = calculateCrcForUint64((crc ^ strategy.getUint8(it)) & 0xFF);
