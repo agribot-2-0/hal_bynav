@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <agribot_common/connection/IParser.h>
-#include <hal_bynav/BynavFrame.h>
+#include <agribot_common/connection/parser/IParser.h>
+#include <hal_bynav/frame/BynavFrame.h>
 
 #include <algorithm>
 #include <memory>

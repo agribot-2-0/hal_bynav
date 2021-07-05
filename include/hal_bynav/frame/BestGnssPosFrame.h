@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <hal_bynav/BynavFrame.h>
+#include <hal_bynav/frame/BynavFrame.h>
 
 #include <string>
 #include <vector>

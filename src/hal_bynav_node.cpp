@@ -4,12 +4,12 @@
 
 #include "hal_bynav/HalBynavNode.h"
 
-#include "hal_bynav/BynavParser.h"
-#include "hal_bynav/BynavFrameFactory.h"
+#include "hal_bynav/parser/BynavParser.h"
+#include "hal_bynav/frame/BynavFrameFactory.h"
 
-#include "agribot_common/connection/Buffer.h"
-#include "agribot_common/connection/TcpSocket.h"
-#include "agribot_common/connection/LsbFirstParsingStrategy.h"
+#include "agribot_common/connection/buffer/Buffer.h"
+#include "agribot_common/connection/socket/TcpSocket.h"
+#include "agribot_common/connection/parsing_strategy/LsbFirstParsingStrategy.h"
 #include "agribot_common/CommonFunctions/ros_common_functions.h"
 
 int main(int argc, char** argv)

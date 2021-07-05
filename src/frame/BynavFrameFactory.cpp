@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Agribot. All rights reserved.
  */
 
-#include <hal_bynav/BynavFrameFactory.h>
+#include <hal_bynav/frame/BynavFrameFactory.h>
 
 std::unique_ptr<IFrame> BynavFrameFactory::createFrame(uint64_t id) const
 {

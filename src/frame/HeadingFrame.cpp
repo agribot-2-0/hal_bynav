@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Agribot. All rights reserved.
  */
 
-#include <hal_bynav/HeadingFrame.h>
+#include <hal_bynav/frame/HeadingFrame.h>
 
 void HeadingFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it)
 {
