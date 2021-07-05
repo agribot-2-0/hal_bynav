@@ -1,0 +1,136 @@
+@startuml hal_bynav
+
+namespace hal_bynav {
+  interface IFrame
+  {
+  }
+
+  interface IFrameFactory
+  {
+  }
+
+  interface IParser
+  {
+  }
+
+  interface IParsingStrategy
+  {
+  }
+
+  interface ISocket
+  {
+  }
+
+  class Buffer
+  {
+  }
+
+  class LsbFirstParsingStrategy
+  {
+  }
+
+  class TcpSocket
+  {
+  }
+
+  class BynavFrameFactory
+  {
+    + createFrame(uint64_t id) : std::unique_ptr<IFrame>
+  }
+
+  class BynavParser
+  {
+
+    + splitPacketBufferToFrameBuffers(Buffer& packet_buffer) : void
+    + haveFrameBufferToParse() : bool
+    + parseFrameBuffer() : void
+    + registerCallback(uint64_t id, const std::function<void(IFrame&)>& callback) : void
+    + getFrameBuffersQueue() : std::queue<Buffer>
+
+    - callCallbacks(uint64_t id, IFrame& frame) : void
+    - getId(const Buffer&) : uint64_t
+
+    - std::unique_ptr<IParsingStrategy> parsing_strategy_
+    - std::unique_ptr<IFrameFactory> frame_factory_
+    - {field} std::unordered_map<uint64_t, std::vector<std::function<void(IFrame&)>>> callback_map_
+    - std::queue<Buffer> frame_buffers_
+  }
+
+  class HalBynavNode
+  {
+    + run() : void
+    + connectSocket() : void
+    + reconnectSocket() : void
+    + publishNavSatFix(const IFrame& i_frame) : void
+    + publishGnssExtended(const IFrame& i_frame) : void
+    + publishImu(const IFrame& i_frame) : void
+    + publishHeadingExtended(const IFrame& i_frame) : void
+    + printBestGnssPosFrame(const IFrame& i_frame) : void
+    + printHeadingFrame(const IFrame& i_frame) : void
+
+    - navSatFixMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) : sensor_msgs::NavSatFix
+    - bynavGnssExtendedMsgFromBestGnssPosFrame(const BestGnssPosFrame& frame) : agribot_msgs::BynavGnssExtended
+    - imuMsgFromHeadingFrame(const HeadingFrame& frame) : sensor_msgs::Imu
+    - bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame) : agribot_msgs::BynavHeadingExtended
+
+    - std::unique_ptr<IParser> parser_
+    - std::unique_ptr<ISocket> socket_
+    - std::unique_ptr<Buffer> buffer_
+    - ros::NodeHandle* nh_
+    - ros::Publisher nav_sat_fix_publisher_
+    - ros::Publisher heading_publisher_
+    - ros::Publisher gnss_extended_publisher_
+    - ros::Publisher heading_extended_publisher_
+    - bool publish_extended_data_
+    - bool print_debug_info_
+    - std::string frame_id_
+    - int socket_read_errors_n_
+  }
+
+  class BynavFrame
+  {
+    # LsbFirstParsingStrategy strategy_
+    + deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
+    + serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
+    + calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : uint32_t
+    + calculateCrcForUint64(uint64_t value) : uint64_t
+  }
+
+  class BestGnssPosFrame
+  {
+    + deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
+  }
+
+  class HeadingFrame
+  {
+    + deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
+  }
+
+  ' Inheritance
+  class TcpSocket implements ISocket
+  class LsbFirstParsingStrategy implements IParsingStrategy
+  class BynavFrameFactory implements IFrameFactory
+  class BynavParser implements IParser
+  class BynavFrame implements IFrame
+  class HeadingFrame implements BynavFrame
+  class BestGnssPosFrame implements BynavFrame
+
+  ' Dependencies
+  BynavParser o-- IParsingStrategy
+  BynavParser o-- IFrameFactory
+
+  HalBynavNode o-- IParser
+  HalBynavNode o-- ISocket
+  HalBynavNode o-- Buffer
+
+  BynavFrameFactory ..> IFrame
+
+  BynavFrame o-- LsbFirstParsingStrategy
+
+  ISocket ..> Buffer
+  IParser ..> Buffer
+  IParser ..> IFrame
+  IFrameFactory ..> IFrame
+}
+
+@enduml

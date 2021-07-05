@@ -2,22 +2,18 @@
 
 <launch>
 
-  <arg name="frame_id"      default="bynav_link" />
-  <arg name="ip_address"    default="192.168.0.102" />
-  <arg name="port"          default="1111" />
-
   <arg name="gnss_topic" default="/agribot/gnss/bynav"/>
   <arg name="heading_topic" default="/agribot/heading/bynav"/>
-
+  <arg name="gnss_extended_topic" default="/agribot/gnss/bynav/extended"/>
+  <arg name="heading_extended_topic" default="/agribot/heading/bynav/extended"/>
+  
   <node pkg="hal_bynav" type="hal_bynav_node" name="hal_bynav_node">
-    <param name="frame_id" value="$(arg frame_id)" />
-    <param name="ip_address" value="$(arg ip_address)" />
-    <param name="port" value="$(arg port)" />
+    <rosparam command="load" file="$(env AGRIBOT_HOME)/agribot/configs/hal/hal_bynav/hal_bynav.yaml" />
 
     <remap from="~gnss" to="$(arg gnss_topic)"/>
     <remap from="~heading" to="$(arg heading_topic)"/>
+    <remap from="~gnss/extended" to="$(arg gnss_extended_topic)"/>
+    <remap from="~heading/extended" to="$(arg heading_extended_topic)"/>
   </node>
-
-  <node pkg="tf" type="static_transform_publisher" name="map_bynav_static_transfrom_publisher" args="0 0 0 0 0 0 map bynav_link 100" />
 
 </launch>
