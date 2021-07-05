@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Agribot. All rights reserved.
  */
 
-#include <hal_bynav/BynavParser.h>
+#include <hal_bynav/parser/BynavParser.h>
 
 BynavParser::BynavParser(std::unique_ptr<IParsingStrategy> strategy, std::unique_ptr<IFrameFactory> factory)
   : parsing_strategy_(std::move(strategy)), frame_factory_(std::move(factory))

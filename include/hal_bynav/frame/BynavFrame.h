@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <agribot_common/connection/IFrame.h>
-#include <agribot_common/connection/LsbFirstParsingStrategy.h>
+#include <agribot_common/connection/frame/IFrame.h>
+#include <agribot_common/connection/parsing_strategy/LsbFirstParsingStrategy.h>
 
 #include <stdexcept>
 #include <vector>

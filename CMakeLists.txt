@@ -27,11 +27,11 @@ include_directories(
 add_executable(hal_bynav_node 
   src/hal_bynav_node.cpp
   src/HalBynavNode.cpp
-  src/BynavParser.cpp
-  src/BynavFrameFactory.cpp
-  src/BynavFrame.cpp
-  src/HeadingFrame.cpp
-  src/BestGnssPosFrame.cpp
+  src/parser/BynavParser.cpp
+  src/frame/BynavFrameFactory.cpp
+  src/frame/BynavFrame.cpp
+  src/frame/HeadingFrame.cpp
+  src/frame/BestGnssPosFrame.cpp
 )
 target_link_libraries(hal_bynav_node ${catkin_LIBRARIES})
 add_dependencies(hal_bynav_node ${catkin_EXPORTED_TARGETS})
@@ -53,11 +53,11 @@ install(DIRECTORY launch
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(bynav-test
     test/bynav_test.cpp
-    src/BynavParser.cpp
-    src/BynavFrameFactory.cpp
-    src/BynavFrame.cpp
-    src/HeadingFrame.cpp
-    src/BestGnssPosFrame.cpp
+    src/parser/BynavParser.cpp
+    src/frame/BynavFrameFactory.cpp
+    src/frame/BynavFrame.cpp
+    src/frame/HeadingFrame.cpp
+    src/frame/BestGnssPosFrame.cpp
   )
   target_link_libraries(bynav-test ${catkin_LIBRARIES} gtest)
 endif()

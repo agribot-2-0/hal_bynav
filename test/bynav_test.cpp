@@ -5,10 +5,10 @@
 #include <gtest/gtest.h>
 #include <cstring>
 
-#include "hal_bynav/BynavFrameFactory.h"
-#include "hal_bynav/BynavParser.h"
-#include "agribot_common/connection/Buffer.h"
-#include "agribot_common/connection/LsbFirstParsingStrategy.h"
+#include "hal_bynav/frame/BynavFrameFactory.h"
+#include "hal_bynav/parser/BynavParser.h"
+#include "agribot_common/connection/buffer/Buffer.h"
+#include "agribot_common/connection/parsing_strategy/LsbFirstParsingStrategy.h"
 
 TEST(BynavFrameFactoryTest, CreatesHeadingFrame)
 {

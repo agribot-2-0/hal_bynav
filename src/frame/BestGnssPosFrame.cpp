@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Agribot. All rights reserved.
  */
 
-#include <hal_bynav/BestGnssPosFrame.h>
+#include <hal_bynav/frame/BestGnssPosFrame.h>
 
 void BestGnssPosFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it)
 {

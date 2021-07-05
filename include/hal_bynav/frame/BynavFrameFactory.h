@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <agribot_common/connection/IFrameFactory.h>
-#include <hal_bynav/HeadingFrame.h>
-#include <hal_bynav/BestGnssPosFrame.h>
+#include <agribot_common/connection/frame/IFrameFactory.h>
+#include <hal_bynav/frame/HeadingFrame.h>
+#include <hal_bynav/frame/BestGnssPosFrame.h>
 
 #include <memory>
 #include <stdexcept>
