@@ -5,6 +5,7 @@
 #pragma once
 
 #include <agribot_common/connection/IFrame.h>
+#include <agribot_common/connection/LsbFirstParsingStrategy.h>
 
 #include <stdexcept>
 #include <vector>
@@ -116,16 +117,13 @@ struct BynavFrame : public IFrame
   BynavFrame& operator=(const BynavFrame& other) = delete;
   BynavFrame& operator=(BynavFrame&& other) = delete;
 
-  void deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                   const IParsingStrategy& strategy) override;
-  void serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                 const IParsingStrategy& strategy) override;
-  uint32_t calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                        const IParsingStrategy& strategy);
+  void deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) override;
+  void serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) override;
+  uint32_t calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it);
   uint64_t calculateCrcForUint64(uint64_t value);
 
   static constexpr uint8_t CRC_LENGTH{ 4 };
-  static constexpr std::uint64_t CRC32_POLYNOMIAL = 0xEDB88320;
+  static constexpr uint64_t CRC32_POLYNOMIAL{ 0xEDB88320 };
 
   // Housekeeping (header) data
   uint8_t header_length_;
@@ -134,4 +132,7 @@ struct BynavFrame : public IFrame
   uint16_t gnss_week_;
   uint32_t gnss_milliseconds_;
   uint32_t crc_in_frame_;
+
+protected:
+  LsbFirstParsingStrategy strategy_;
 };

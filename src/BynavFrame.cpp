@@ -4,8 +4,7 @@
 
 #include <hal_bynav/BynavFrame.h>
 
-void BynavFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                             const IParsingStrategy& strategy)
+void BynavFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it)
 {
   auto frame_length = std::distance(begin_it, end_it);
 
@@ -16,37 +15,34 @@ void BynavFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vecto
   }
 
   // Parse housekeeping data
-  header_length_ = strategy.getUint8(std::next(begin_it, BynavFrameIndex::HeaderLength));
-  message_id_ = strategy.getUint16(std::next(begin_it, BynavFrameIndex::MessageId));
-  message_length_ = strategy.getUint16(std::next(begin_it, BynavFrameIndex::MessageLength));
-  gnss_week_ = strategy.getUint16(std::next(begin_it, BynavFrameIndex::GnssWeek));
-  gnss_milliseconds_ = strategy.getUint32(std::next(begin_it, BynavFrameIndex::GnssMilliseconds));
+  header_length_ = strategy_.getUint8(std::next(begin_it, BynavFrameIndex::HeaderLength));
+  message_id_ = strategy_.getUint16(std::next(begin_it, BynavFrameIndex::MessageId));
+  message_length_ = strategy_.getUint16(std::next(begin_it, BynavFrameIndex::MessageLength));
+  gnss_week_ = strategy_.getUint16(std::next(begin_it, BynavFrameIndex::GnssWeek));
+  gnss_milliseconds_ = strategy_.getUint32(std::next(begin_it, BynavFrameIndex::GnssMilliseconds));
 
   // Check length validity
   if (frame_length != (header_length_ + message_length_ + CRC_LENGTH))
   {
-    throw std::runtime_error("Frame length missmatch");
+    throw std::runtime_error("Frame length mismatch");
   }
 }
 
-void BynavFrame::serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                           const IParsingStrategy& strategy)
+void BynavFrame::serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it)
 {
   // TODO(all) - implement in the future
   static_cast<void>(begin_it);
   static_cast<void>(end_it);
-  static_cast<void>(strategy);
 }
 
-uint32_t BynavFrame::calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                                  const IParsingStrategy& strategy)
+uint32_t BynavFrame::calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it)
 {
   uint64_t crc = 0;
 
   for (auto it = begin_it; it != end_it; ++it)
   {
     auto tmp1 = (crc >> 8) & 0x00FFFFFFL;
-    auto tmp2 = calculateCrcForUint64((crc ^ strategy.getUint8(it)) & 0xFF);
+    auto tmp2 = calculateCrcForUint64((crc ^ strategy_.getUint8(it)) & 0xFF);
     crc = tmp1 ^ tmp2;
   }
   return static_cast<uint32_t>(crc);

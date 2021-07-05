@@ -58,7 +58,7 @@ void BynavParser::parseFrameBuffer()
   {
     auto id = getId(frame_buffer);
     auto frame = frame_factory_->createFrame(id);
-    frame->deserialize(frame_buffer.buffer_.begin(), frame_buffer.buffer_.end(), *parsing_strategy_);
+    frame->deserialize(frame_buffer.buffer_.begin(), frame_buffer.buffer_.end());
     callCallbacks(id, *frame);
     frame_buffers_.pop();
   }

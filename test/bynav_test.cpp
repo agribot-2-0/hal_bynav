@@ -268,12 +268,11 @@ TEST(BynavFrameTest, CalculateCrcFromBuffer)
 {
   // Prepare data
   BynavFrame frame;
-  LsbFirstParsingStrategy strategy;
   uint32_t expected_crc = 2683756513;
   std::vector<uint8_t> buffer{ 0x14, 0x32, 0xFA, 0x92, 0xAA, 0xB5, 0x06, 0x65, 0x88, 0x39 };
 
   // Check assertion
-  ASSERT_EQ(expected_crc, frame.calculateCrc(buffer.begin(), buffer.end(), strategy));
+  ASSERT_EQ(expected_crc, frame.calculateCrc(buffer.begin(), buffer.end()));
 }
 
 TEST(HeadingFrameTest, BynavHeadingToRep103)

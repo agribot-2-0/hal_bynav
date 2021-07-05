@@ -47,10 +47,9 @@ struct HeadingFrame : public BynavFrame
   static float bynavHeadingToRep103(float bynav_heading);
   static float bynavPitchToRep103(float bynav_pitch);
 
-  void deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it,
-                   const IParsingStrategy& strategy) override;
+  void deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) override;
 
-  static constexpr uint64_t ID { 971 };
+  static constexpr uint64_t ID{ 971 };
 
   // Main data
   SolutionStatus solution_status_;
