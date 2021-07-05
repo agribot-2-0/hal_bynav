@@ -89,19 +89,21 @@ namespace hal_bynav {
 
   class BynavFrame
   {
-    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : void
-    + calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : uint32_t
+    # LsbFirstParsingStrategy strategy_
+    + deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
+    + serialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
+    + calculateCrc(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : uint32_t
     + calculateCrcForUint64(uint64_t value) : uint64_t
   }
 
   class BestGnssPosFrame
   {
-    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : void
+    + deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
   }
 
   class HeadingFrame
   {
-    + parse(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it, const IParsingStrategy& strategy) : void
+    + deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it) : void
   }
 
   ' Inheritance
@@ -122,6 +124,8 @@ namespace hal_bynav {
   HalBynavNode o-- Buffer
 
   BynavFrameFactory ..> IFrame
+
+  BynavFrame o-- LsbFirstParsingStrategy
 
   ISocket ..> Buffer
   IParser ..> Buffer
