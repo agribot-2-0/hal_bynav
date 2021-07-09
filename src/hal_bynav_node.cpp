@@ -14,11 +14,11 @@
 
 int main(int argc, char** argv)
 {
+  ros::init(argc, argv, "hal_bynav_node");
+  ros::NodeHandle nh("~");
+
   try
   {
-    ros::init(argc, argv, "hal_bynav_node");
-    ros::NodeHandle nh("~");
-
     auto ip_address = ros_common_functions::getRosParam<std::string>("~ip_address");
     uint16_t port = ros_common_functions::getRosParam<int>("~port");
     uint16_t timeout_ms = ros_common_functions::getRosParam<int>("~timeout_ms");
@@ -37,6 +37,7 @@ int main(int argc, char** argv)
   catch (const std::exception& e)
   {
     ROS_FATAL_STREAM(e.what());
+    ros::shutdown();
     exit(-1);
   }
 }
