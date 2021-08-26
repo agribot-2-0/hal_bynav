@@ -47,7 +47,14 @@ void BestGnssPosFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std:
   altitude_std_ = strategy_.getFloat(std::next(main_data_begin_it, BestGnssPosFrameIndex::AltitudeStd));
   auto rtcm_id = strategy_.getString(std::next(main_data_begin_it, BestGnssPosFrameIndex::StationIdBegin),
                                      std::next(main_data_begin_it, BestGnssPosFrameIndex::StationIdEnd));
-  station_id_ = station_ids_.at(std::stoi(rtcm_id));
+  try
+  {
+    station_id_ = station_ids_.at(std::stoi(rtcm_id));
+  }
+  catch (const std::out_of_range& e)
+  {
+    station_id_ = "Unknown station with ID: " + std::stoi(rtcm_id);
+  }
   differential_age_s = strategy_.getFloat(std::next(main_data_begin_it, BestGnssPosFrameIndex::DifferentialAge));
   solution_age_s = strategy_.getFloat(std::next(main_data_begin_it, BestGnssPosFrameIndex::SolutionAge));
   tracked_satellites_n_ = strategy_.getUint8(std::next(main_data_begin_it, BestGnssPosFrameIndex::TrackedSatellitesN));
