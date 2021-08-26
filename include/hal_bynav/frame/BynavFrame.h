@@ -8,6 +8,7 @@
 #include <agribot_common/connection/parsing_strategy/LsbFirstParsingStrategy.h>
 
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
