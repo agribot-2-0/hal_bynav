@@ -135,6 +135,7 @@ struct BynavFrame : public IFrame
   uint32_t gnss_milliseconds_;
   uint32_t crc_in_frame_;
 
+  // taken from http://www.asgeupos.pl/index.php?wpg_type=syst_descr&sub=ref_st
   inline static const std::unordered_map<int, std::string> station_ids_ = {
     { 31, "BART" },  { 41, "BIAL" },  { 112, "BILG" }, { 98, "BOGI" },  { 61, "BOR1" },  { 111, "BPDL" },
     { 42, "BRSK" },  { 141, "BUZD" }, { 81, "BYDG" },  { 97, "CBKA" },  { 92, "CCHN" },  { 113, "CHEL" },
