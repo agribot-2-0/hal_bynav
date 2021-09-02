@@ -46,14 +46,6 @@ void HeadingFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vec
       common_functions::radians(strategy_.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::PitchStd)));
   auto rtcm_id = strategy_.getString(std::next(main_data_begin_it, HeadingFrameIndex::StationIdBegin),
                                      std::next(main_data_begin_it, HeadingFrameIndex::StationIdEnd));
-  try
-  {
-    station_id_ = station_ids_.at(std::stoi(rtcm_id));
-  }
-  catch (const std::out_of_range& e)
-  {
-    station_id_ = "Unknown station with ID: " + std::stoi(rtcm_id);
-  }
 
   tracked_satellites_n_ = strategy_.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::TrackedSatellitesN));
   solution_satellites_n_ = strategy_.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::SolutionSatellitesN));

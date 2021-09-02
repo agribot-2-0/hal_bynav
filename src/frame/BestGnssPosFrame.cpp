@@ -3,7 +3,6 @@
  */
 
 #include <hal_bynav/frame/BestGnssPosFrame.h>
-
 void BestGnssPosFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vector<uint8_t>::iterator end_it)
 {
   // Parse and validate part common for all Bynav frames
