@@ -135,7 +135,6 @@ void HalBynavNode::printHeadingFrame(const IFrame& iframe) const
                   << "Pitch: " << frame->pitch_ << std::endl
                   << "Heading std: " << frame->heading_std_ << std::endl
                   << "Pitch std: " << frame->pitch_std_ << std::endl
-                  << "Station ID: " << frame->station_id_ << std::endl
                   << "Tracked satellites: " << frame->tracked_satellites_n_ << std::endl
                   << "Solution satellites: " << frame->solution_satellites_n_ << std::endl
                   << "Above elevation satellites: " << frame->above_elevation_satellites_n_ << std::endl
