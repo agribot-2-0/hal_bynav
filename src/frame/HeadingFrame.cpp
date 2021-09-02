@@ -44,8 +44,6 @@ void HeadingFrame::deserialize(std::vector<uint8_t>::iterator begin_it, std::vec
       common_functions::radians(strategy_.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::HeadingStd)));
   pitch_std_ =
       common_functions::radians(strategy_.getFloat(std::next(main_data_begin_it, HeadingFrameIndex::PitchStd)));
-  auto rtcm_id = strategy_.getString(std::next(main_data_begin_it, HeadingFrameIndex::StationIdBegin),
-                                     std::next(main_data_begin_it, HeadingFrameIndex::StationIdEnd));
 
   tracked_satellites_n_ = strategy_.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::TrackedSatellitesN));
   solution_satellites_n_ = strategy_.getUint8(std::next(main_data_begin_it, HeadingFrameIndex::SolutionSatellitesN));
