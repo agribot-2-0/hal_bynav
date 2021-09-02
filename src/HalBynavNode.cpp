@@ -135,7 +135,6 @@ void HalBynavNode::printHeadingFrame(const IFrame& iframe) const
                   << "Pitch: " << frame->pitch_ << std::endl
                   << "Heading std: " << frame->heading_std_ << std::endl
                   << "Pitch std: " << frame->pitch_std_ << std::endl
-                  << "Station ID: " << frame->station_id_ << std::endl
                   << "Tracked satellites: " << frame->tracked_satellites_n_ << std::endl
                   << "Solution satellites: " << frame->solution_satellites_n_ << std::endl
                   << "Above elevation satellites: " << frame->above_elevation_satellites_n_ << std::endl
@@ -250,7 +249,6 @@ HalBynavNode::bynavHeadingExtendedMsgFromHeadingFrame(const HeadingFrame& frame)
   msg.tracked_satellites_n = frame.tracked_satellites_n_;
   msg.solution_satellites_n = frame.solution_satellites_n_;
   msg.baseline_length = frame.baseline_length_;
-  msg.station_id = frame.station_id_;
 
   msg.extended_solution_status.rtk_assist_active = frame.extended_solution_status_.rtk_assist_active_;
   msg.extended_solution_status.iono_correction = frame.extended_solution_status_.iono_correction_;

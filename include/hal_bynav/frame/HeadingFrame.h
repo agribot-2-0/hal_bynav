@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <hal_bynav/frame/BynavFrame.h>
 #include <agribot_common/CommonFunctions/common_functions.h>
+#include <hal_bynav/frame/BynavFrame.h>
 
 #include <string>
 #include <vector>
@@ -21,8 +21,6 @@ enum
   Pitch = 16,
   HeadingStd = 24,
   PitchStd = 28,
-  StationIdBegin = 32,
-  StationIdEnd = 36,
   TrackedSatellitesN = 36,
   SolutionSatellitesN = 37,
   AboveElevationSatellitesN = 38,
@@ -59,7 +57,6 @@ struct HeadingFrame : public BynavFrame
   float pitch_;
   float heading_std_;
   float pitch_std_;
-  std::string station_id_;
   uint8_t tracked_satellites_n_;
   uint8_t solution_satellites_n_;
   uint8_t above_elevation_satellites_n_;
