@@ -6,7 +6,7 @@
 
   <maintainer email="a.bojda@agribot.eu">Aleksander Bojda</maintainer>
 
-  <license>PROPRIETARY</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
